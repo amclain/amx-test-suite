@@ -12,7 +12,7 @@
     This suite contains functions to test code written for
     AMX NetLinx devices.
     
-    Connect to the NetLinx device via TCP port 5000.  Type
+    Connect to the NetLinx device via TCP port 60000.  Type
     "run" (no quotes) to execute tests.
 *************************************************************
     Copyright 2011 Alex McLain
@@ -57,6 +57,9 @@ TCPIP		= 1;
 testOutPort	= 60000; // User telnet port.
 testAppPort	= 60001; // Future.
 
+TEST_PASS	=  0;
+TEST_FAIL	= -1;
+
 (***********************************************************)
 (*              DATA TYPE DEFINITIONS GO BELOW             *)
 (***********************************************************)
@@ -67,10 +70,10 @@ DEFINE_TYPE
 (***********************************************************)
 DEFINE_VARIABLE
 
-long testsPass;
-long testsFail;
+slong testsPass;
+slong testsFail;
 
-char testsRunning; // Tests are currently running.
+char testsRunning; // Is > 0 if tests are currently running.
 
 (***********************************************************)
 (*               LATCHING DEFINITIONS GO BELOW             *)
@@ -91,7 +94,7 @@ DEFINE_MUTUALLY_EXCLUSIVE
 /*
  * Print a line to the telnet session.
  */
-define_function sinteger testsPrint(char line[])
+define_function sinteger testPrint(char line[])
 {
     send_string dvTestOut, "line, $0d, $0a";
     return 0;
@@ -100,57 +103,106 @@ define_function sinteger testsPrint(char line[])
 /*
  * Print symbol prompting for user input.
  */
-define_function sinteger testsPrintInput()
+define_function sinteger testPrintInput()
 {
     send_string dvTestOut, "'> '";
     return 0;
+}
+
+/*
+ * Print the running test name.
+ */
+define_function sinteger testPrintName(name[])
+{
+    send_string dvTestOut, "'Testing: ', name, $0d, $0a";
+    return 0;
+}
+
+/*
+ * Print 'passed'.
+ */
+define_function sinteger testPass()
+{
+    testsPass++;
+    
+    send_string dvTestOut, "'Passed', $0d, $0a, $0d, $0a";
+    return TEST_PASS;
+}
+
+/*
+ * Print 'failed'.
+ */
+define_function sinteger testFail()
+{
+    testsFail++;
+    
+    send_string dvTestOut, "'--FAILED--', $0d, $0a, $0d, $0a";
+    return TEST_FAIL;
 }
 
 (***********************************************************)
 (*                   TESTING FUNCTIONS                     *)
 (***********************************************************)
 
-define_function sinteger assert(long x, long y, char name[])
+define_function sinteger assert(slong x, char name[])
 {
-    return assertEqual(x, y, name);
+    return assertTrue(x, name);
 }
 
-define_function sinteger assertTrue(long x, char name[])
+define_function sinteger assertTrue(slong x, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x > 0)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
-define_function sinteger assertFalse(long x, char name[])
+define_function sinteger assertFalse(slong x, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x <= 0)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
-define_function sinteger assertEqual(long x, long y, char name[])
-{
-
-}
-
-define_function sinteger assertNotEqual(long x, long y, char name[])
-{
-
-}
-
-define_function sinteger assertGreater(long x, long y, char name[])
-{
-
-}
-
-define_function sinteger assertGreaterEqual(long x, long y, char name[])
-{
-
-}
-
-define_function sinteger assertLess(long x, long y, char name[])
+define_function sinteger assertEqual(slong x, slong y, char name[])
 {
 
 }
 
-define_function sinteger assertLessEqual(long x, long y, char name[])
+define_function sinteger assertNotEqual(slong x, slong y, char name[])
+{
+
+}
+
+define_function sinteger assertGreater(slong x, slong y, char name[])
+{
+
+}
+
+define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
+{
+
+}
+
+define_function sinteger assertLess(slong x, slong y, char name[])
+{
+
+}
+
+define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
 
 }
@@ -197,8 +249,8 @@ data_event[dvTestOut]
 {
     online:
     {
-	testsPrint('Connected to test suite.');
-	testsPrintInput();
+	testPrint('Connected to test suite.');
+	testPrintInput();
     }
     
     string:
@@ -207,20 +259,20 @@ data_event[dvTestOut]
 	
 	if (find_string(data.text, 'help', 1) | find_string(data.text, '?', 1))
 	{
-	    testsPrint('--------------');
-	    testsPrint('   COMMANDS   ');
-	    testsPrint('--------------');
-	    testsPrint('run');
-	    testsPrint('Starts the tests.');
-	    testsPrint('');
-	    testsPrintInput();
+	    testPrint('--------------');
+	    testPrint('   COMMANDS   ');
+	    testPrint('--------------');
+	    testPrint('run');
+	    testPrint('Starts the tests.');
+	    testPrint('');
+	    testPrintInput();
 	}
 	
 	if (find_string(data.text, 'run', 1))
 	{
-	    testsPrint('Running tests...');
-	    testsPrint('Done.');
-	    testsPrintInput();
+	    testPrint('Running tests...');
+	    testPrint('Done.');
+	    testPrintInput();
 	}
     }
     
