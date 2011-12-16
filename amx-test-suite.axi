@@ -14,6 +14,9 @@
     
     Connect to the NetLinx device via TCP port 60000.  Type
     "run" (no quotes) to execute tests.
+    
+    Tests are created in a user-defined file with a call to
+    function testRun().
 *************************************************************
     Copyright 2011 Alex McLain
     
@@ -114,7 +117,7 @@ define_function sinteger testPrintInput()
  */
 define_function sinteger testPrintName(name[])
 {
-    send_string dvTestOut, "'Testing: ', name, $0d, $0a";
+    if (length_string(name) > 0) send_string dvTestOut, "'Testing: ', name, $0d, $0a";
     return 0;
 }
 
@@ -179,32 +182,86 @@ define_function sinteger assertFalse(slong x, char name[])
 
 define_function sinteger assertEqual(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x == y)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertNotEqual(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x != y)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertGreater(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x > y)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x >= 0)y
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertLess(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x < y)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
-
+    testPrintName(name);
+    
+    if (x <= y)
+    {
+	return testPass();
+    }
+    else
+    {
+	return testFail();
+    }
 }
 
 define_function sinteger assertString(char x[], char y[], name[])
@@ -271,6 +328,9 @@ data_event[dvTestOut]
 	if (find_string(data.text, 'run', 1))
 	{
 	    testPrint('Running tests...');
+	    
+	    //testRun(); // Call the user-defined function to start tests.
+	    
 	    testPrint('Done.');
 	    testPrintInput();
 	}
