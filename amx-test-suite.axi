@@ -12,7 +12,7 @@
     This suite contains functions to test code written for
     AMX NetLinx devices.
     
-    Connect to the NetLinx device via TCP port 60000.  Type
+    Connect to the NetLinx device via TCP port 6000.  Type
     "run" (no quotes) to execute tests.
     
     Tests are created in a user-defined file with a call to
@@ -48,8 +48,8 @@ PROGRAM_NAME='amx-test-suite'
 (***********************************************************)
 DEFINE_DEVICE
 
-dvTestOut	= 0:60000:0; // User telnet port.
-dvTestApp	= 0:60001:0; // Future.
+dvTestOut	= 0:6000:0; // User telnet port.
+dvTestApp	= 0:6001:0; // Future.
 
 (***********************************************************)
 (*               CONSTANT DEFINITIONS GO BELOW             *)
@@ -57,8 +57,8 @@ dvTestApp	= 0:60001:0; // Future.
 DEFINE_CONSTANT
 
 TCPIP		= 1;
-testOutPort	= 60000; // User telnet port.
-testAppPort	= 60001; // Future.
+testOutPort	= 6000; // User telnet port.
+testAppPort	= 6001; // Future.
 
 TEST_PASS	=  0;
 TEST_FAIL	= -1;

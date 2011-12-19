@@ -116,11 +116,11 @@
 <SalesOrder></SalesOrder>
 <PurchaseOrder></PurchaseOrder>
 <Comments></Comments>
-<System IsActive="true" Platform="Netlinx" Transport="Serial"><Identifier>test-suite</Identifier>
+<System IsActive="true" Platform="Netlinx" Transport="TCPIP"><Identifier>test-suite</Identifier>
 <SysID>0</SysID>
 <TransSerial>COM1,38400,8,None,1,None</TransSerial>
 <TransModem>COM1,38400,8,None,1,None</TransModem>
-<TransTCPIP>0.0.0.0:1319:1:::</TransTCPIP>
+<TransTCPIP>192.168.0.29:1319:1:Dev::</TransTCPIP>
 <VirtualNetLinxMasterFlag>0</VirtualNetLinxMasterFlag>
 <VNMRestoreIPSettings>0.0.0.0:1319:1</VNMRestoreIPSettings>
 <VNMSystemID>1</VNMSystemID>
@@ -130,6 +130,10 @@
 <UserName></UserName>
 <Password></Password>
 <Comments></Comments>
+<File CompileType="None" Type="Include"><Identifier>amx-test-suite</Identifier>
+<FilePathName>amx-test-suite.axi</FilePathName>
+<Comments></Comments>
+</File>
 <File CompileType="Netlinx" Type="MasterSrc"><Identifier>test-suite</Identifier>
 <FilePathName>test-suite.axs</FilePathName>
 <Comments></Comments>
