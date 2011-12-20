@@ -150,7 +150,7 @@ define_function sinteger testFail()
  */
 define_function sinteger testParseUserBuffer()
 {
-    if (find_string(testUserBuf, "$0d", 1) == 0 || find_string(testUserBuf, "$0a", 1) == 0) return 0;
+    if (find_string(testUserBuf, "$0d", 1) == 0 && find_string(testUserBuf, "$0a", 1) == 0) return 0;
     
     if (find_string(data.text, 'help', 1) > 0 || find_string(data.text, '?', 1) > 0)
     {
@@ -161,6 +161,8 @@ define_function sinteger testParseUserBuffer()
 	testPrint('Starts the tests.');
 	testPrint('');
 	testPrintInput();
+	
+	clear_buffer testUserBuf;
     }
     
     if (find_string(data.text, 'run', 1))
@@ -171,6 +173,8 @@ define_function sinteger testParseUserBuffer()
 	
 	testPrint('Done.');
 	testPrintInput();
+	
+	clear_buffer testUserBuf;
     }
     
     return 0;
@@ -383,7 +387,7 @@ data_event[dvTestUser]
     
     string:
     {
-	if (data.text != $0d || data.text != $0a)
+	if (data.text != $0d && data.text != $0a)
 	{
 	    send_string dvTestUser, "data.text"; // Echo text to user.
 	}
@@ -395,6 +399,7 @@ data_event[dvTestUser]
     
     offline:
     {
+	clear_buffer testUserBuf;
 	ip_server_open(testUserPort, testUserPort, TCPIP);
     }
 }
