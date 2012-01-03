@@ -152,7 +152,7 @@ define_function sinteger testParseUserBuffer()
 {
     if (find_string(testUserBuf, "$0d", 1) == 0 && find_string(testUserBuf, "$0a", 1) == 0) return 0;
     
-    if (find_string(data.text, 'help', 1) > 0 || find_string(data.text, '?', 1) > 0)
+    if (find_string(testUserBuf, 'help', 1) > 0 || find_string(testUserBuf, '?', 1) > 0)
     {
 	testPrint('--------------');
 	testPrint('   COMMANDS   ');
@@ -165,15 +165,26 @@ define_function sinteger testParseUserBuffer()
 	clear_buffer testUserBuf;
     }
     
-    if (find_string(data.text, 'run', 1))
+    if (find_string(testUserBuf, 'run', 1))
     {
 	testPrint('Running tests...');
 	
 	//testRun(); // Call the user-defined function to start tests.
 	
 	testPrint('Done.');
+	testPrint('');
 	testPrintInput();
 	
+	clear_buffer testUserBuf;
+    }
+    
+    /////////////////////
+    // TODO: Revise this.
+    /////////////////////
+    if (length_string(testUserBuf) > 0)
+    {
+	testPrint('Unknown command.');
+	testPrintInput();
 	clear_buffer testUserBuf;
     }
     
@@ -394,6 +405,7 @@ data_event[dvTestUser]
 	else
 	{
 	    send_string dvTestUser, "$0d, $0a";
+	    testParseUserBuffer();
 	}
     }
     
@@ -408,8 +420,6 @@ data_event[dvTestUser]
 (*            THE ACTUAL PROGRAM GOES BELOW                *)
 (***********************************************************)
 DEFINE_PROGRAM
-
-testParseUserBuffer();
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)
