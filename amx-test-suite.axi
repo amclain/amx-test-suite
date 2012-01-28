@@ -158,8 +158,11 @@ define_function testParseUserCommand(char str[])
 	testPrint('--------------------------------------------------');
 	testPrint('                     COMMANDS                     ');
 	testPrint('--------------------------------------------------');
+	testPrint('help                                              ');
+	testPrint('   Display this list of test suite commands.      ');
+	testPrint('                                                  ');
 	testPrint('run                                               ');
-	testPrint('   Starts the tests.                              ');
+	testPrint('   Start the tests.                               ');
 	testPrint('--------------------------------------------------');
     }
     
