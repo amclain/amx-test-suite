@@ -53,17 +53,11 @@ DEFINE_DEVICE
 
 dvTestDebug	= 0:0:0;     // Debug output.
 vdvListener	= 36000:1:0; // User command listener.
-//dvTestUser	= 0:6000:0;  // User telnet port.
-//dvTestApp	= 0:6001:0;  // Future.
 
 (***********************************************************)
 (*               CONSTANT DEFINITIONS GO BELOW             *)
 (***********************************************************)
 DEFINE_CONSTANT
-
-TCPIP		= 1;
-//testUserPort	= 6000; // User telnet port.
-//testAppPort	= 6001; // Future.
 
 TEST_PASS	=  0;
 TEST_FAIL	= -1;
@@ -77,8 +71,6 @@ DEFINE_TYPE
 (*               VARIABLE DEFINITIONS GO BELOW             *)
 (***********************************************************)
 DEFINE_VARIABLE
-
-//char testUserBuf[1024];
 
 slong testsPass;
 slong testsFail;
@@ -363,10 +355,6 @@ define_function sinteger assertStringNotContains(char x[], char y[], name[])
 (***********************************************************)
 DEFINE_START
 
-//create_buffer dvTestUser, testUserBuf;
-
-//ip_server_open(testUserPort, testUserPort, TCPIP);
-//ip_server_open(testAppPort, testAppPort, TCPIP); // Future.
 
 (***********************************************************)
 (*                THE EVENTS GO BELOW                      *)
@@ -377,9 +365,6 @@ data_event[vdvListener]
 {
     string:
     {
-	//send_string dvTestDebug, "'Received string:'";
-	//send_string dvTestDebug, "data.text"; // Echo text to user.
-	
 	testParseUserCommand(data.text);
     }
 }
