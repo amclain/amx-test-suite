@@ -162,9 +162,18 @@ define_function testParseUserCommand(char str[])
     {
 	testPrint('Running tests...');
 	
-	//testRun(); // Call the user-defined function to start tests.
+	testsRunning = 1; // Flag tests as running.
 	
+	testRun(); // Call the user-defined function to start tests.
+	
+	testsRunning = 0; // Flag tests as completed.
+	
+	testPrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
 	testPrint('Done.');
+	
+	// Reset test counters.
+	testsPass = 0;
+	testsFail = 0;
     }
 }
 

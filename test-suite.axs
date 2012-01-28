@@ -49,6 +49,17 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
 
+define_function testRun()
+{
+    integer a, b;
+    a = 1;
+    b = 2;
+    
+    assert(a == 1, 'a == 1');
+    assert(b == 2, 'b == 2');
+    assert(b == 3, 'b == 3');
+}
+
 (***********************************************************)
 (*                STARTUP CODE GOES BELOW                  *)
 (***********************************************************)
