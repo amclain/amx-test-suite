@@ -12,8 +12,11 @@
     This suite contains functions to test code written for
     AMX NetLinx devices.
     
-    Connect to the NetLinx device via TCP port 6000.  Type
-    "run" (no quotes) to execute tests.
+    TO START THE TESTS:
+    Set the NetLinx Diagnostics "Control Device" page to
+    device 36000, port 1, system 0.  In the message to send
+    box, type "run" (no quotes), select string as the type,
+    and send the string to the device.
     
     Tests are created in a user-defined file with a call to
     function testRun().
@@ -48,8 +51,10 @@ PROGRAM_NAME='amx-test-suite'
 (***********************************************************)
 DEFINE_DEVICE
 
-dvTestUser	= 0:6000:0; // User telnet port.
-dvTestApp	= 0:6001:0; // Future.
+dvTestDebug	= 0:0:0;     // Debug output.
+vdvListener	= 36000:1:0; // User command listener.
+//dvTestUser	= 0:6000:0;  // User telnet port.
+//dvTestApp	= 0:6001:0;  // Future.
 
 (***********************************************************)
 (*               CONSTANT DEFINITIONS GO BELOW             *)
@@ -57,8 +62,8 @@ dvTestApp	= 0:6001:0; // Future.
 DEFINE_CONSTANT
 
 TCPIP		= 1;
-testUserPort	= 6000; // User telnet port.
-testAppPort	= 6001; // Future.
+//testUserPort	= 6000; // User telnet port.
+//testAppPort	= 6001; // Future.
 
 TEST_PASS	=  0;
 TEST_FAIL	= -1;
@@ -73,7 +78,7 @@ DEFINE_TYPE
 (***********************************************************)
 DEFINE_VARIABLE
 
-char testUserBuf[1024];
+//char testUserBuf[1024];
 
 slong testsPass;
 slong testsFail;
@@ -97,30 +102,28 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
 
 /*
- * Print a line to the telnet session.
+ * Print a line to the NetLinx diagnostic window.
  */
-define_function sinteger testPrint(char line[])
+define_function testPrint(char line[])
 {
-    send_string dvTestUser, "line, $0d, $0a";
-    return 0;
+    send_string dvTestDebug, "line";
 }
 
 /*
  * Print symbol prompting for user input.
+ * DEPRECATED
  */
-define_function sinteger testPrintInput()
+define_function testPrintInput()
 {
-    send_string dvTestUser, "'> '";
-    return 0;
+    send_string dvTestDebug, "'> '";
 }
 
 /*
  * Print the running test name.
  */
-define_function sinteger testPrintName(name[])
+define_function testPrintName(name[])
 {
-    if (length_string(name) > 0) send_string dvTestUser, "'Testing: ', name, $0d, $0a";
-    return 0;
+    if (length_string(name) > 0) send_string dvTestDebug, "'Testing: ', name";
 }
 
 /*
@@ -130,7 +133,7 @@ define_function sinteger testPass()
 {
     testsPass++;
     
-    send_string dvTestUser, "'Passed', $0d, $0a, $0d, $0a";
+    send_string dvTestDebug, "'Passed.'";
     return TEST_PASS;
 }
 
@@ -141,54 +144,33 @@ define_function sinteger testFail()
 {
     testsFail++;
     
-    send_string dvTestUser, "'--FAILED--', $0d, $0a, $0d, $0a";
+    send_string dvTestDebug, "'--FAILED--'";
     return TEST_FAIL;
 }
 
 /*
  * Parse user buffer.
  */
-define_function sinteger testParseUserBuffer()
+define_function testParseUserCommand(char str[])
 {
-    if (find_string(testUserBuf, "$0d", 1) == 0 && find_string(testUserBuf, "$0a", 1) == 0) return 0;
-    
-    if (find_string(testUserBuf, 'help', 1) > 0 || find_string(testUserBuf, '?', 1) > 0)
+    if (find_string(str, 'help', 1) > 0 || find_string(str, '?', 1) > 0)
     {
-	testPrint('--------------');
-	testPrint('   COMMANDS   ');
-	testPrint('--------------');
-	testPrint('run');
-	testPrint('Starts the tests.');
-	testPrint('');
-	testPrintInput();
-	
-	clear_buffer testUserBuf;
+	testPrint('--------------------------------------------------');
+	testPrint('                     COMMANDS                     ');
+	testPrint('--------------------------------------------------');
+	testPrint('run                                               ');
+	testPrint('   Starts the tests.                              ');
+	testPrint('--------------------------------------------------');
     }
     
-    if (find_string(testUserBuf, 'run', 1))
+    if (find_string(str, 'run', 1))
     {
 	testPrint('Running tests...');
 	
 	//testRun(); // Call the user-defined function to start tests.
 	
 	testPrint('Done.');
-	testPrint('');
-	testPrintInput();
-	
-	clear_buffer testUserBuf;
     }
-    
-    /////////////////////
-    // TODO: Revise this.
-    /////////////////////
-    if (length_string(testUserBuf) > 0)
-    {
-	testPrint('Unknown command.');
-	testPrintInput();
-	clear_buffer testUserBuf;
-    }
-    
-    return 0;
 }
 
 (***********************************************************)
@@ -378,9 +360,9 @@ define_function sinteger assertStringNotContains(char x[], char y[], name[])
 (***********************************************************)
 DEFINE_START
 
-create_buffer dvTestUser, testUserBuf;
+//create_buffer dvTestUser, testUserBuf;
 
-ip_server_open(testUserPort, testUserPort, TCPIP);
+//ip_server_open(testUserPort, testUserPort, TCPIP);
 //ip_server_open(testAppPort, testAppPort, TCPIP); // Future.
 
 (***********************************************************)
@@ -388,31 +370,14 @@ ip_server_open(testUserPort, testUserPort, TCPIP);
 (***********************************************************)
 DEFINE_EVENT
 
-data_event[dvTestUser]
+data_event[vdvListener]
 {
-    online:
-    {
-	testPrint('Connected to test suite.');
-	testPrintInput();
-    }
-    
     string:
     {
-	if (data.text != $0d && data.text != $0a)
-	{
-	    send_string dvTestUser, "data.text"; // Echo text to user.
-	}
-	else
-	{
-	    send_string dvTestUser, "$0d, $0a";
-	    testParseUserBuffer();
-	}
-    }
-    
-    offline:
-    {
-	clear_buffer testUserBuf;
-	ip_server_open(testUserPort, testUserPort, TCPIP);
+	//send_string dvTestDebug, "'Received string:'";
+	//send_string dvTestDebug, "data.text"; // Echo text to user.
+	
+	testParseUserCommand(data.text);
     }
 }
 
