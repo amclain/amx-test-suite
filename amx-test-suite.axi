@@ -9,7 +9,7 @@
  --                   THE AMX ORGANIZATION                   --
     
     
-    This suite contains functions to test code written for
+    This suite contains functionality to test code written for
     AMX NetLinx devices.
     
     Tests are created in a user-defined file with a call to
@@ -169,14 +169,22 @@ define_function testSuiteParseUserCommand(char str[])
 }
 
 (***********************************************************)
-(*                   TESTING FUNCTIONS                     *)
+(*                    TEST ASSERTIONS                      *)
 (***********************************************************)
 
+/*
+ *  Alias of assertTrue().
+ */
 define_function sinteger assert(slong x, char name[])
 {
     return assertTrue(x, name);
 }
 
+/*
+ *  Passes if x is true (x > 0).  x can also be an expression,
+ *  for example:
+ *  assertTrue(myVariable == 10, 'Test my variable.');
+ */
 define_function sinteger assertTrue(slong x, char name[])
 {
     testSuitePrintName(name);
@@ -191,6 +199,11 @@ define_function sinteger assertTrue(slong x, char name[])
     }
 }
 
+/*
+ *  Passes if x is false (x <= 0).  If error codes are defined
+ *  as negative numbers, this test will also pass.  x can also
+ *  be an expression (see assertTrue() function).
+ */
 define_function sinteger assertFalse(slong x, char name[])
 {
     testSuitePrintName(name);
@@ -205,6 +218,10 @@ define_function sinteger assertFalse(slong x, char name[])
     }
 }
 
+/*
+ *  Passes if x and y are equal.
+ *  x == y
+ */
 define_function sinteger assertEqual(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -219,6 +236,10 @@ define_function sinteger assertEqual(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Passes if x and y are not equal.
+ *  x != y
+ */
 define_function sinteger assertNotEqual(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -233,6 +254,10 @@ define_function sinteger assertNotEqual(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Passes if x is greater than y.
+ *  x > y
+ */
 define_function sinteger assertGreater(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -247,6 +272,10 @@ define_function sinteger assertGreater(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Passes if x is greater than or equal to y.
+ *  x >= y
+ */
 define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -261,6 +290,10 @@ define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Passes if x is less than y.
+ *  x < y
+ */
 define_function sinteger assertLess(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -275,6 +308,10 @@ define_function sinteger assertLess(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Passes if x is less than or equal to y.
+ *  x <= y
+ */
 define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
     testSuitePrintName(name);
@@ -289,11 +326,18 @@ define_function sinteger assertLessEqual(slong x, slong y, char name[])
     }
 }
 
+/*
+ *  Alias of assertStringEqual().
+ */
 define_function sinteger assertString(char x[], char y[], name[])
 {
     return assertStringEqual(x, y, name);
 }
 
+/*
+ *  Passes if string x[] is identical to string y[].
+ *  x[] == y[]
+ */
 define_function sinteger assertStringEqual(char x[], char y[], name[])
 {
     testSuitePrintName(name);
@@ -308,6 +352,10 @@ define_function sinteger assertStringEqual(char x[], char y[], name[])
     }
 }
 
+/*
+ *  Passes if string x[] is not identical to string y[].
+ *  x[] != y[]
+ */
 define_function sinteger assertStringNotEqual(char x[], char y[], name[])
 {
     testSuitePrintName(name);
@@ -322,6 +370,10 @@ define_function sinteger assertStringNotEqual(char x[], char y[], name[])
     }
 }
 
+/*
+ *  Passes if string x[] contains string y[].
+ *  y[] is in x[]
+ */
 define_function sinteger assertStringContains(char x[], char y[], name[])
 {
     testSuitePrintName(name);
@@ -336,6 +388,10 @@ define_function sinteger assertStringContains(char x[], char y[], name[])
     }
 }
 
+/*
+ *  Passes if string x[] does not contain string y[].
+ *  y[] not in x[]
+ */
 define_function sinteger assertStringNotContains(char x[], char y[], name[])
 {
     testSuitePrintName(name);
