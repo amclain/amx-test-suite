@@ -161,34 +161,50 @@ define_function testSuiteParseUserCommand(char str[])
 {
     if (find_string(str, 'help', 1) > 0 || find_string(str, '?', 1) > 0)
     {
-	testSuitePrint('--------------------------------------------------');
-	testSuitePrint('                     COMMANDS                     ');
-	testSuitePrint('--------------------------------------------------');
-	testSuitePrint('help                                              ');
-	testSuitePrint('   Display this list of test suite commands.      ');
-	testSuitePrint('                                                  ');
-	testSuitePrint('run                                               ');
-	testSuitePrint('   Start the tests.                               ');
-	testSuitePrint('--------------------------------------------------');
+	testSuitePrintCommands();
     }
     
     if (find_string(str, 'run', 1))
     {
-	if (testsRunning == TEST_SUITE_RUNNING) return;
-	
-	testsRunning = TEST_SUITE_RUNNING; // Flag tests as running.
-	
-	testSuiteResetCounters();
-	
-	testSuitePrint('Running tests...');
-	
-	testSuiteRun(); // Call the user-defined function to start tests.
-	
-	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
-	testSuitePrint('Done.');
-	
-	testsRunning = TEST_SUITE_IDLE; // Flag tests as completed.
+	testSuiteStartTests();
     }
+}
+
+/*
+ *  Print the list of test suite commands.
+ */
+define_function testSuitePrintCommands()
+{
+    testSuitePrint('--------------------------------------------------');
+    testSuitePrint('                     COMMANDS                     ');
+    testSuitePrint('--------------------------------------------------');
+    testSuitePrint('help                                              ');
+    testSuitePrint('   Display this list of test suite commands.      ');
+    testSuitePrint('                                                  ');
+    testSuitePrint('run                                               ');
+    testSuitePrint('   Start the tests.                               ');
+    testSuitePrint('--------------------------------------------------');
+}
+
+/*
+ *  Run the tests.
+ */
+define_function testSuiteStartTests()
+{
+    if (testsRunning == TEST_SUITE_RUNNING) return;
+    
+    testsRunning = TEST_SUITE_RUNNING; // Flag tests as running.
+    
+    testSuiteResetCounters();
+    
+    testSuitePrint('Running tests...');
+    
+    testSuiteRun(); // Call the user-defined function to start tests.
+    
+    testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
+    testSuitePrint('Done.');
+    
+    testsRunning = TEST_SUITE_IDLE; // Flag tests as completed.
 }
 
 (***********************************************************)
