@@ -51,8 +51,8 @@ PROGRAM_NAME='amx-test-suite'
 (***********************************************************)
 DEFINE_DEVICE
 
-dvTestDebug	= 0:0:0;     // Debug output.
-vdvListener	= 36000:1:0; // User command listener.
+dvTestSuiteDebug	= 0:0:0;     // Debug output.
+vdvTestSuiteListener	= 36000:1:0; // User command listener.
 
 (***********************************************************)
 (*               CONSTANT DEFINITIONS GO BELOW             *)
@@ -96,80 +96,80 @@ DEFINE_MUTUALLY_EXCLUSIVE
 /*
  * Print a line to the NetLinx diagnostic window.
  */
-define_function testPrint(char line[])
+define_function testSuitePrint(char line[])
 {
-    send_string dvTestDebug, "line";
+    send_string dvTestSuiteDebug, "line";
 }
 
 /*
  * Print symbol prompting for user input.
  * DEPRECATED
  */
-define_function testPrintInput()
+define_function testSuitePrintInput()
 {
-    send_string dvTestDebug, "'> '";
+    send_string dvTestSuiteDebug, "'> '";
 }
 
 /*
  * Print the running test name.
  */
-define_function testPrintName(name[])
+define_function testSuitePrintName(name[])
 {
-    if (length_string(name) > 0) send_string dvTestDebug, "'Testing: ', name";
+    if (length_string(name) > 0) send_string dvTestSuiteDebug, "'Testing: ', name";
 }
 
 /*
  * Print 'passed'.
  */
-define_function sinteger testPass()
+define_function sinteger testSuitePass()
 {
     testsPass++;
     
-    send_string dvTestDebug, "'Passed.'";
+    send_string dvTestSuiteDebug, "'Passed.'";
     return TEST_PASS;
 }
 
 /*
  * Print 'failed'.
  */
-define_function sinteger testFail()
+define_function sinteger testSuiteFail()
 {
     testsFail++;
     
-    send_string dvTestDebug, "'--FAILED--'";
+    send_string dvTestSuiteDebug, "'--FAILED--'";
     return TEST_FAIL;
 }
 
 /*
  * Parse user buffer.
  */
-define_function testParseUserCommand(char str[])
+define_function testSuiteParseUserCommand(char str[])
 {
     if (find_string(str, 'help', 1) > 0 || find_string(str, '?', 1) > 0)
     {
-	testPrint('--------------------------------------------------');
-	testPrint('                     COMMANDS                     ');
-	testPrint('--------------------------------------------------');
-	testPrint('help                                              ');
-	testPrint('   Display this list of test suite commands.      ');
-	testPrint('                                                  ');
-	testPrint('run                                               ');
-	testPrint('   Start the tests.                               ');
-	testPrint('--------------------------------------------------');
+	testSuitePrint('--------------------------------------------------');
+	testSuitePrint('                     COMMANDS                     ');
+	testSuitePrint('--------------------------------------------------');
+	testSuitePrint('help                                              ');
+	testSuitePrint('   Display this list of test suite commands.      ');
+	testSuitePrint('                                                  ');
+	testSuitePrint('run                                               ');
+	testSuitePrint('   Start the tests.                               ');
+	testSuitePrint('--------------------------------------------------');
     }
     
     if (find_string(str, 'run', 1))
     {
-	testPrint('Running tests...');
+	testSuitePrint('Running tests...');
 	
 	testsRunning = 1; // Flag tests as running.
 	
-	testRun(); // Call the user-defined function to start tests.
+	testSuiteRun(); // Call the user-defined function to start tests.
 	
 	testsRunning = 0; // Flag tests as completed.
 	
-	testPrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
-	testPrint('Done.');
+	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
+	testSuitePrint('Done.');
 	
 	// Reset test counters.
 	testsPass = 0;
@@ -188,113 +188,113 @@ define_function sinteger assert(slong x, char name[])
 
 define_function sinteger assertTrue(slong x, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x > 0)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertFalse(slong x, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x <= 0)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertEqual(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x == y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertNotEqual(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x != y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertGreater(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x > y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x >= y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertLess(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x < y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (x <= y)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
@@ -305,57 +305,57 @@ define_function sinteger assertString(char x[], char y[], name[])
 
 define_function sinteger assertStringEqual(char x[], char y[], name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (compare_string(x, y) == 1)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertStringNotEqual(char x[], char y[], name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (compare_string(x, y) == 0)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertStringContains(char x[], char y[], name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (find_string(x, y, 1) >= 1)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
 define_function sinteger assertStringNotContains(char x[], char y[], name[])
 {
-    testPrintName(name);
+    testSuitePrintName(name);
     
     if (find_string(x, y, 1) == 0)
     {
-	return testPass();
+	return testSuitePass();
     }
     else
     {
-	return testFail();
+	return testSuiteFail();
     }
 }
 
@@ -370,11 +370,11 @@ DEFINE_START
 (***********************************************************)
 DEFINE_EVENT
 
-data_event[vdvListener]
+data_event[vdvTestSuiteListener]
 {
     string:
     {
-	testParseUserCommand(data.text);
+	testSuiteParseUserCommand(data.text);
     }
 }
 
