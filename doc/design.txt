@@ -1,12 +1,9 @@
 DESIGN CONCEPT
 ==============
 
-User telnet's into AMX box on port 5000.
-
-User types the command "run" (no quotes) and the tests are run,
-output being sent to port 5000 so the user can save the log.
-* This could be turned into a TCP client app in the future. *
-
-Test suite executes the 'testsRun' function, which should be
+Test suite executes the testSuiteRun() function, which should be
 defined in the user's source code.  User's tests call functions from
 the test suite.
+
+User can interface with the test suite running on a NetLinx master
+through the NetLinx Diagnostic application.

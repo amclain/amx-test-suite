@@ -1,5 +1,5 @@
 (***********************************************************
-    AMX TEST SUITE
+    AMX NETLINX TEST SUITE
     v0.1.0
 
     Website: https://sourceforge.net/projects/[FUTURE]
@@ -12,14 +12,14 @@
     This suite contains functions to test code written for
     AMX NetLinx devices.
     
+    Tests are created in a user-defined file with a call to
+    function testSuiteRun().
+    
     TO START THE TESTS:
     Set the NetLinx Diagnostics "Control Device" page to
     device 36000, port 1, system 0.  In the message to send
     box, type "run" (no quotes), select string as the type,
     and send the string to the device.
-    
-    Tests are created in a user-defined file with a call to
-    function testRun().
 *************************************************************
     Copyright 2011 Alex McLain
     
