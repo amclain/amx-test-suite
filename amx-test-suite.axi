@@ -13,13 +13,24 @@
     AMX NetLinx devices.
     
     Tests are created in a user-defined file with a call to
-    function testSuiteRun().
+    function testSuiteRun().  Use the assert functions below
+    to verify your code's behavior.
     
     TO START THE TESTS:
-    Set the NetLinx Diagnostics "Control Device" page to
-    device 36000, port 1, system 0.  In the message to send
-    box, type "run" (no quotes), select string as the type,
-    and send the string to the device.
+    Compile your test project and load it on a master device.
+    Launch the NetLinx Diagnostics Program provided by AMX and
+    connect to the master.  When connected, click the "Enable
+    Internal System Diagnostics" button.  In the "Control
+    Device" page, set the device to control as follows:
+    
+    Device 36000
+    Port   1
+    System 0
+    
+    In the message to send box, type "run" (no quotes), select
+    string as the type, and send the string to the device.
+    The test results will be displayed in the "Diagnostics"
+    window.
 *************************************************************
     Copyright 2011 Alex McLain
     
