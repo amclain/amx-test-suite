@@ -143,6 +143,15 @@ define_function sinteger testSuiteFail()
 }
 
 /*
+ *  Reset the test counters.
+ */
+define_function testSuiteResetCounters()
+{
+    testsFail = 0;
+    testsPass = 0;
+}
+
+/*
  * Parse user buffer.
  */
 define_function testSuiteParseUserCommand(char str[])
@@ -162,6 +171,8 @@ define_function testSuiteParseUserCommand(char str[])
     
     if (find_string(str, 'run', 1))
     {
+	testSuiteResetCounters();
+	
 	testSuitePrint('Running tests...');
 	
 	testsRunning = 1; // Flag tests as running.
@@ -172,10 +183,6 @@ define_function testSuiteParseUserCommand(char str[])
 	
 	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
 	testSuitePrint('Done.');
-	
-	// Reset test counters.
-	testsPass = 0;
-	testsFail = 0;
     }
 }
 
