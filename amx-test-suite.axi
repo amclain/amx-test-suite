@@ -102,15 +102,6 @@ define_function testSuitePrint(char line[])
 }
 
 /*
- * Print symbol prompting for user input.
- * DEPRECATED
- */
-define_function testSuitePrintInput()
-{
-    send_string dvTestSuiteDebug, "'> '";
-}
-
-/*
  * Print the running test name.
  */
 define_function testSuitePrintName(name[])
