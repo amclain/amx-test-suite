@@ -73,6 +73,9 @@ DEFINE_CONSTANT
 TEST_PASS	=  0;
 TEST_FAIL	= -1;
 
+TEST_SUITE_IDLE	   = 0;
+TEST_SUITE_RUNNING = 1;
+
 (***********************************************************)
 (*              DATA TYPE DEFINITIONS GO BELOW             *)
 (***********************************************************)
@@ -105,7 +108,7 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
 
 /*
- * Print a line to the NetLinx diagnostic window.
+ *  Print a line to the NetLinx diagnostic window.
  */
 define_function testSuitePrint(char line[])
 {
@@ -113,15 +116,15 @@ define_function testSuitePrint(char line[])
 }
 
 /*
- * Print the running test name.
+ *  Print the running test name.
  */
-define_function testSuitePrintName(name[])
+define_function testSuitePrintName(char name[])
 {
     if (length_string(name) > 0) send_string dvTestSuiteDebug, "'Testing: ', name";
 }
 
 /*
- * Print 'passed'.
+ *  Print 'passed'.
  */
 define_function sinteger testSuitePass()
 {
@@ -132,7 +135,7 @@ define_function sinteger testSuitePass()
 }
 
 /*
- * Print 'failed'.
+ *  Print 'failed'.
  */
 define_function sinteger testSuiteFail()
 {
@@ -152,7 +155,7 @@ define_function testSuiteResetCounters()
 }
 
 /*
- * Parse user buffer.
+ *  Parse user command.
  */
 define_function testSuiteParseUserCommand(char str[])
 {
@@ -171,18 +174,20 @@ define_function testSuiteParseUserCommand(char str[])
     
     if (find_string(str, 'run', 1))
     {
+	if (testsRunning == TEST_SUITE_RUNNING) return;
+	
+	testsRunning = TEST_SUITE_RUNNING; // Flag tests as running.
+	
 	testSuiteResetCounters();
 	
 	testSuitePrint('Running tests...');
 	
-	testsRunning = 1; // Flag tests as running.
-	
 	testSuiteRun(); // Call the user-defined function to start tests.
-	
-	testsRunning = 0; // Flag tests as completed.
 	
 	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
 	testSuitePrint('Done.');
+	
+	testsRunning = TEST_SUITE_IDLE; // Flag tests as completed.
     }
 }
 
