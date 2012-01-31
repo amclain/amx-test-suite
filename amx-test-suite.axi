@@ -204,13 +204,14 @@ define_function testSuiteParseUserCommand(char str[])
 define_function testSuitePrintCommands()
 {
     testSuitePrint('--------------------------------------------------');
-    testSuitePrint('                     COMMANDS                     ');
+    testSuitePrint('               TEST SUITE COMMANDS                ');
     testSuitePrint('--------------------------------------------------');
     testSuitePrint('help                                              ');
     testSuitePrint('   Display this list of test suite commands.      ');
     testSuitePrint('                                                  ');
-    testSuitePrint('run                                               ');
+    testSuitePrint('run [-v]                                          ');
     testSuitePrint('   Start the tests.                               ');
+    testSuitePrint('   -v   Verbose mode: Show tests that pass.       ');
     testSuitePrint('--------------------------------------------------');
 }
 
