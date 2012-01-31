@@ -237,7 +237,7 @@ define_function testSuiteStartTests()
 }
 
 (***********************************************************)
-(*                    TEST ASSERTIONS                      *)
+(*                 TEST SUITE ASSERTIONS                   *)
 (***********************************************************)
 
 /*
@@ -249,8 +249,9 @@ define_function sinteger assert(slong x, char name[])
 }
 
 /*
- *  Passes if x is true (x > 0).  x can also be an expression,
- *  for example:
+ *  Passes if x is true (x > 0).  This means success codes
+ *  can be defined as positive numbers. x can also be an
+ *  expression, for example:
  *  assertTrue(myVariable == 10, 'Test my variable.');
  */
 define_function sinteger assertTrue(slong x, char name[])
