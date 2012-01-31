@@ -1,9 +1,0 @@
-DESIGN CONCEPT
-==============
-
-Test suite executes the testSuiteRun() function, which should be
-defined in the user's source code.  User's tests call functions from
-the test suite.
-
-User can interface with the test suite running on a NetLinx master
-through the NetLinx Diagnostic application.
