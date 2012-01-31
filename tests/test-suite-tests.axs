@@ -6,6 +6,9 @@
     
     
     These functions test the application's functionality.
+    
+    >>  Run the tests in verbose mode (run -v) to verify  <<
+    >>  that assertions pass and fail correctly.          <<
 ************************************************************)
 
 PROGRAM_NAME='test-suite-tests'
