@@ -255,8 +255,6 @@ define_function sinteger assert(slong x, char name[])
  */
 define_function sinteger assertTrue(slong x, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x > 0)
     {
 	return testSuitePass(name);
@@ -274,8 +272,6 @@ define_function sinteger assertTrue(slong x, char name[])
  */
 define_function sinteger assertFalse(slong x, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x <= 0)
     {
 	return testSuitePass(name);
@@ -292,8 +288,6 @@ define_function sinteger assertFalse(slong x, char name[])
  */
 define_function sinteger assertEqual(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x == y)
     {
 	return testSuitePass(name);
@@ -310,8 +304,6 @@ define_function sinteger assertEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertNotEqual(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x != y)
     {
 	return testSuitePass(name);
@@ -328,8 +320,6 @@ define_function sinteger assertNotEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertGreater(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x > y)
     {
 	return testSuitePass(name);
@@ -346,8 +336,6 @@ define_function sinteger assertGreater(slong x, slong y, char name[])
  */
 define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x >= y)
     {
 	return testSuitePass(name);
@@ -364,8 +352,6 @@ define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertLess(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x < y)
     {
 	return testSuitePass(name);
@@ -382,8 +368,6 @@ define_function sinteger assertLess(slong x, slong y, char name[])
  */
 define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
-    //testSuitePrintName(name);
-    
     if (x <= y)
     {
 	return testSuitePass(name);
@@ -408,8 +392,6 @@ define_function sinteger assertString(char x[], char y[], name[])
  */
 define_function sinteger assertStringEqual(char x[], char y[], name[])
 {
-    //testSuitePrintName(name);
-    
     if (compare_string(x, y) == 1)
     {
 	return testSuitePass(name);
@@ -426,8 +408,6 @@ define_function sinteger assertStringEqual(char x[], char y[], name[])
  */
 define_function sinteger assertStringNotEqual(char x[], char y[], name[])
 {
-    //testSuitePrintName(name);
-    
     if (compare_string(x, y) == 0)
     {
 	return testSuitePass(name);
@@ -444,8 +424,6 @@ define_function sinteger assertStringNotEqual(char x[], char y[], name[])
  */
 define_function sinteger assertStringContains(char x[], char y[], name[])
 {
-    //testSuitePrintName(name);
-    
     if (find_string(x, y, 1) >= 1)
     {
 	return testSuitePass(name);
@@ -462,8 +440,6 @@ define_function sinteger assertStringContains(char x[], char y[], name[])
  */
 define_function sinteger assertStringNotContains(char x[], char y[], name[])
 {
-    //testSuitePrintName(name);
-    
     if (find_string(x, y, 1) == 0)
     {
 	return testSuitePass(name);
