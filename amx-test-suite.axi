@@ -89,7 +89,7 @@ DEFINE_VARIABLE
 slong testsPass;
 slong testsFail;
 
-char testsRunning; // Is > 0 if tests are currently running.
+char testSuiteRunning; // Is > 0 if tests are currently running.
 
 (***********************************************************)
 (*               LATCHING DEFINITIONS GO BELOW             *)
@@ -191,9 +191,9 @@ define_function testSuitePrintCommands()
  */
 define_function testSuiteStartTests()
 {
-    if (testsRunning == TEST_SUITE_RUNNING) return;
+    if (testSuiteRunning == TEST_SUITE_RUNNING) return;
     
-    testsRunning = TEST_SUITE_RUNNING; // Flag tests as running.
+    testSuiteRunning = TEST_SUITE_RUNNING; // Flag tests as running.
     
     testSuiteResetCounters();
     
@@ -204,7 +204,7 @@ define_function testSuiteStartTests()
     testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
     testSuitePrint('Done.');
     
-    testsRunning = TEST_SUITE_IDLE; // Flag tests as completed.
+    testSuiteRunning = TEST_SUITE_IDLE; // Flag tests as completed.
 }
 
 (***********************************************************)
