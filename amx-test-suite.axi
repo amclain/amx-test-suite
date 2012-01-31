@@ -1,6 +1,6 @@
 (***********************************************************
     AMX NETLINX TEST SUITE
-    v0.1.0
+    v1.0.0
 
     Website: https://sourceforge.net/projects/amx-test-suite/
     
