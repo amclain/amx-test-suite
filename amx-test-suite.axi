@@ -73,8 +73,13 @@ DEFINE_CONSTANT
 TEST_PASS	=  0;
 TEST_FAIL	= -1;
 
+// Test Suite Running States //
 TEST_SUITE_IDLE	   = 0;
 TEST_SUITE_RUNNING = 1;
+
+// Test Suite Message Modes //
+TEST_SUITE_MESSAGE_NORMAL  = 0; // Only print failed tests.
+TEST_SUITE_MESSAGE_VERBOSE = 1; // Print all tests.
 
 (***********************************************************)
 (*              DATA TYPE DEFINITIONS GO BELOW             *)
@@ -89,7 +94,8 @@ DEFINE_VARIABLE
 slong testsPass;
 slong testsFail;
 
-char testSuiteRunning; // Is > 0 if tests are currently running.
+char testSuiteRunning;		// See test suite runnning states.
+char testSuiteMessageMode;	// See test suite message modes.
 
 (***********************************************************)
 (*               LATCHING DEFINITIONS GO BELOW             *)
@@ -126,21 +132,27 @@ define_function testSuitePrintName(char name[])
 /*
  *  Print 'passed'.
  */
-define_function sinteger testSuitePass()
+define_function sinteger testSuitePass(char name[])
 {
     testsPass++;
     
-    send_string dvTestSuiteDebug, "'Passed.'";
+    if (testSuiteMessageMode == TEST_SUITE_MESSAGE_VERBOSE)
+    {
+	testSuitePrintName(name);
+	send_string dvTestSuiteDebug, "'Passed.'";
+    }
+    
     return TEST_PASS;
 }
 
 /*
  *  Print 'failed'.
  */
-define_function sinteger testSuiteFail()
+define_function sinteger testSuiteFail(char name[])
 {
     testsFail++;
     
+    testSuitePrintName(name);
     send_string dvTestSuiteDebug, "'--FAILED--'";
     return TEST_FAIL;
 }
@@ -159,6 +171,8 @@ define_function testSuiteResetCounters()
  */
 define_function testSuiteParseUserCommand(char str[])
 {
+    if (testSuiteRunning == TEST_SUITE_RUNNING) return;
+    
     if (find_string(str, 'help', 1) > 0 || find_string(str, '?', 1) > 0)
     {
 	testSuitePrintCommands();
@@ -166,6 +180,20 @@ define_function testSuiteParseUserCommand(char str[])
     
     if (find_string(str, 'run', 1))
     {
+	if (length_string(str) < 6)
+	{
+	    // No flags.  Run in normal mode.
+	    testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;
+	}
+	else
+	{
+	    // Check for verbose mode.
+	    if (find_string(str, 'v', 1))
+	    {
+		testSuiteMessageMode = TEST_SUITE_MESSAGE_VERBOSE;
+	    }
+	}
+	
 	testSuiteStartTests();
     }
 }
@@ -226,15 +254,15 @@ define_function sinteger assert(slong x, char name[])
  */
 define_function sinteger assertTrue(slong x, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x > 0)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -245,15 +273,15 @@ define_function sinteger assertTrue(slong x, char name[])
  */
 define_function sinteger assertFalse(slong x, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x <= 0)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -263,15 +291,15 @@ define_function sinteger assertFalse(slong x, char name[])
  */
 define_function sinteger assertEqual(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x == y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -281,15 +309,15 @@ define_function sinteger assertEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertNotEqual(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x != y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -299,15 +327,15 @@ define_function sinteger assertNotEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertGreater(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x > y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -317,15 +345,15 @@ define_function sinteger assertGreater(slong x, slong y, char name[])
  */
 define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x >= y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -335,15 +363,15 @@ define_function sinteger assertGreaterEqual(slong x, slong y, char name[])
  */
 define_function sinteger assertLess(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x < y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -353,15 +381,15 @@ define_function sinteger assertLess(slong x, slong y, char name[])
  */
 define_function sinteger assertLessEqual(slong x, slong y, char name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (x <= y)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -379,15 +407,15 @@ define_function sinteger assertString(char x[], char y[], name[])
  */
 define_function sinteger assertStringEqual(char x[], char y[], name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (compare_string(x, y) == 1)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -397,15 +425,15 @@ define_function sinteger assertStringEqual(char x[], char y[], name[])
  */
 define_function sinteger assertStringNotEqual(char x[], char y[], name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (compare_string(x, y) == 0)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -415,15 +443,15 @@ define_function sinteger assertStringNotEqual(char x[], char y[], name[])
  */
 define_function sinteger assertStringContains(char x[], char y[], name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (find_string(x, y, 1) >= 1)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -433,15 +461,15 @@ define_function sinteger assertStringContains(char x[], char y[], name[])
  */
 define_function sinteger assertStringNotContains(char x[], char y[], name[])
 {
-    testSuitePrintName(name);
+    //testSuitePrintName(name);
     
     if (find_string(x, y, 1) == 0)
     {
-	return testSuitePass();
+	return testSuitePass(name);
     }
     else
     {
-	return testSuiteFail();
+	return testSuiteFail(name);
     }
 }
 
@@ -450,6 +478,10 @@ define_function sinteger assertStringNotContains(char x[], char y[], name[])
 (***********************************************************)
 DEFINE_START
 
+testSuiteRunning = TEST_SUITE_IDLE;
+testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;
+
+testSuiteResetCounters();
 
 (***********************************************************)
 (*                THE EVENTS GO BELOW                      *)
