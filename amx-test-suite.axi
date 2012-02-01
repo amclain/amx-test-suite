@@ -58,7 +58,7 @@ PROGRAM_NAME='amx-test-suite'
     History: See version control repository.
 *)
 (***********************************************************)
-(*          DEVICE NUMBER DEFINITIONS GO BELOW             *)
+(*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
 (***********************************************************)
 DEFINE_DEVICE
 
@@ -66,7 +66,7 @@ dvTestSuiteDebug	= 0:0:0;     // Debug output.
 vdvTestSuiteListener	= 36000:1:0; // User command listener.
 
 (***********************************************************)
-(*               CONSTANT DEFINITIONS GO BELOW             *)
+(*              CONSTANT DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_CONSTANT
 
@@ -87,7 +87,7 @@ TEST_SUITE_MESSAGE_VERBOSE = 1; // Print all tests.
 DEFINE_TYPE
 
 (***********************************************************)
-(*               VARIABLE DEFINITIONS GO BELOW             *)
+(*              VARIABLE DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_VARIABLE
 
@@ -98,17 +98,17 @@ char testSuiteRunning;		// See test suite runnning states.
 char testSuiteMessageMode;	// See test suite message modes.
 
 (***********************************************************)
-(*               LATCHING DEFINITIONS GO BELOW             *)
+(*              LATCHING DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_LATCHING
 
 (***********************************************************)
-(*       MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW           *)
+(*         MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW         *)
 (***********************************************************)
 DEFINE_MUTUALLY_EXCLUSIVE
 
 (***********************************************************)
-(*        SUBROUTINE/FUNCTION DEFINITIONS GO BELOW         *)
+(*         SUBROUTINE/FUNCTION DEFINITIONS GO BELOW        *)
 (***********************************************************)
 (* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
@@ -452,7 +452,7 @@ define_function sinteger assertStringNotContains(char x[], char y[], name[])
 }
 
 (***********************************************************)
-(*                STARTUP CODE GOES BELOW                  *)
+(*                 STARTUP CODE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_START
 
@@ -462,7 +462,7 @@ testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;
 testSuiteResetCounters();
 
 (***********************************************************)
-(*                THE EVENTS GO BELOW                      *)
+(*                   THE EVENTS GO BELOW                   *)
 (***********************************************************)
 DEFINE_EVENT
 
@@ -475,12 +475,11 @@ data_event[vdvTestSuiteListener]
 }
 
 (***********************************************************)
-(*            THE ACTUAL PROGRAM GOES BELOW                *)
+(*                 THE MAINLINE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_PROGRAM
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)
-(*        DO NOT PUT ANY CODE BELOW THIS COMMENT           *)
+(*          DO NOT PUT ANY CODE BELOW THIS COMMENT         *)
 (***********************************************************)
-
