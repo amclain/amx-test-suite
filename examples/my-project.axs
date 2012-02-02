@@ -14,27 +14,24 @@
 ************************************************************)
 
 PROGRAM_NAME='my-project'
-
-#include 'my-project-functions'
-
 (***********************************************************)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
 (***********************************************************)
-(* REV HISTORY:                                            *)
+(*                    INCLUDES GO BELOW                    *)
 (***********************************************************)
-(*
-    $History: $
-*)
+
+#include 'my-project-functions'
+
 (***********************************************************)
-(*          DEVICE NUMBER DEFINITIONS GO BELOW             *)
+(*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
 (***********************************************************)
 DEFINE_DEVICE
 
 dvTP = 10001:1:0; // Touch panel.
 
 (***********************************************************)
-(*               CONSTANT DEFINITIONS GO BELOW             *)
+(*              CONSTANT DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_CONSTANT
 
@@ -47,7 +44,7 @@ BTN_VOL_DN = 2;   // Touch panel volume down button.
 DEFINE_TYPE
 
 (***********************************************************)
-(*               VARIABLE DEFINITIONS GO BELOW             *)
+(*              VARIABLE DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_VARIABLE
 
@@ -55,23 +52,23 @@ sinteger volumeLevelMic1;
 sinteger volumeLevelMic2;
 
 (***********************************************************)
-(*               LATCHING DEFINITIONS GO BELOW             *)
+(*              LATCHING DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_LATCHING
 
 (***********************************************************)
-(*       MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW           *)
+(*         MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW         *)
 (***********************************************************)
 DEFINE_MUTUALLY_EXCLUSIVE
 
 (***********************************************************)
-(*        SUBROUTINE/FUNCTION DEFINITIONS GO BELOW         *)
+(*         SUBROUTINE/FUNCTION DEFINITIONS GO BELOW        *)
 (***********************************************************)
 (* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
 
 (***********************************************************)
-(*                STARTUP CODE GOES BELOW                  *)
+(*                 STARTUP CODE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_START
 
@@ -79,7 +76,7 @@ volumeLevelMic1 = 0;
 volumeLevelMic2 = 0;
 
 (***********************************************************)
-(*                THE EVENTS GO BELOW                      *)
+(*                   THE EVENTS GO BELOW                   *)
 (***********************************************************)
 DEFINE_EVENT
 
@@ -102,12 +99,11 @@ button_event[dvTP, BTN_VOL_DN]
 }
 
 (***********************************************************)
-(*            THE ACTUAL PROGRAM GOES BELOW                *)
+(*                 THE MAINLINE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_PROGRAM
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)
-(*        DO NOT PUT ANY CODE BELOW THIS COMMENT           *)
+(*          DO NOT PUT ANY CODE BELOW THIS COMMENT         *)
 (***********************************************************)
-
