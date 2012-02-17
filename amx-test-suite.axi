@@ -62,7 +62,7 @@ PROGRAM_NAME='amx-test-suite'
 (***********************************************************)
 DEFINE_DEVICE
 
-dvTestSuiteDebug	= 0:0:0;     // Debug output.
+dvTestSuiteDebug	= 0:0:0;     // Console output.
 vdvTestSuiteListener	= 36000:1:0; // User command listener.
 
 (***********************************************************)
@@ -81,10 +81,43 @@ TEST_SUITE_RUNNING = 1;
 TEST_SUITE_MESSAGE_NORMAL  = 0; // Only print failed tests.
 TEST_SUITE_MESSAGE_VERBOSE = 1; // Print all tests.
 
+// Test Suite Event Types //
+TEST_SUITE_EVENT_NULL		= 0
+TEST_SUITE_EVENT_COMMAND	= 1;
+TEST_SUITE_EVENT_STRING		= 2;
+TEST_SUITE_EVENT_ONLINE		= 3;
+TEST_SUITE_EVENT_OFFLINE	= 4;
+TEST_SUITE_EVENT_ONERROR	= 5;
+TEST_SUITE_EVENT_STANDBY	= 6;
+TEST_SUITE_EVENT_AWAKE		= 7;
+TEST_SUITE_EVENT_PUSH		= 8;
+TEST_SUITE_EVENT_RELEASE	= 9;
+TEST_SUITE_EVENT_HOLD		= 10;
+TEST_SUITE_EVENT_ON		= 11;
+TEST_SUITE_EVENT_OFF		= 12;
+TEST_SUITE_EVENT_LEVEL		= 13;
+
+// Test Suite Event Status //
+TEST_SUITE_ESTAT_ASSERTED	=  2;
+TEST_SUITE_ESTAT_PENDING	=  1;
+TEST_SUITE_ESTAT_VACANT		=  0;	// Index can be overwritten.
+TEST_SUITE_ESTAT_FAILED		= -1;
+TEST_SUITE_ESTAT_EXPIRED	= -2;
+
 (***********************************************************)
 (*              DATA TYPE DEFINITIONS GO BELOW             *)
 (***********************************************************)
 DEFINE_TYPE
+
+// Used for testing events.
+struct testSuiteEvent
+{
+    dev device;		// Device triggering the event.
+    sinteger status;	// See test suite event status constants.
+    integer type;	// See test suite event type constants.
+    char str[1024];	// Data: Used for strings.
+    char level;		// Data: Used for levels.
+}
 
 (***********************************************************)
 (*              VARIABLE DEFINITIONS GO BELOW              *)
@@ -96,6 +129,16 @@ slong testsFail;
 
 char testSuiteRunning;		// See test suite runnning states.
 char testSuiteMessageMode;	// See test suite message modes.
+
+// These arrays take up a lot of memory (>500k).
+// Store them in RAM instead of non-volatile.
+volatile testSuiteEvent testSuiteEventAsserts[255];
+volatile testSuiteEvent testSuiteEventQueue[255];
+
+volatile integer testSuiteEventAssertReadPos;
+volatile integer testSuiteEventAssertWritePos;
+volatile integer testSuiteEventQueueReadPos;
+volatile integer testSuiteEventQueueWritePos;
 
 (***********************************************************)
 (*              LATCHING DEFINITIONS GO BELOW              *)
