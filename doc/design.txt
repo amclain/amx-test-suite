@@ -7,3 +7,13 @@ the test suite.
 
 User can interface with the test suite running on a NetLinx master
 through the NetLinx Diagnostic application.
+
+--------------
+    FUTURE    
+--------------
+
+ * Event testing.
+
+Use virtual device or intercept device events to be able to run device integration tests.  Preferably something that doesn't have to be switched between production and testing mode.
+
+Include files contain virtual devices that are combined to physical devices in production, or combined to virtual device handlers in testing.  Testing can utilize a queue system to assert events.
