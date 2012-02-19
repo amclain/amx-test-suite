@@ -55,7 +55,7 @@ PROGRAM_NAME='amx-test-suite'
 (* REV HISTORY:                                            *)
 (***********************************************************)
 (*
-    History: See version control repository.
+    History: See changelog.txt or version control repository.
 *)
 (***********************************************************)
 (*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
