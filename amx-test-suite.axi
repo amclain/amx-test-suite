@@ -48,6 +48,9 @@
 ************************************************************)
 
 PROGRAM_NAME='amx-test-suite'
+
+#if_not_defined AMX_TEST_SUITE
+#define AMX_TEST_SUITE 1
 (***********************************************************)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
@@ -55,7 +58,7 @@ PROGRAM_NAME='amx-test-suite'
 (* REV HISTORY:                                            *)
 (***********************************************************)
 (*
-    History: See version control repository.
+    History: See changelog.txt or version control repository.
 *)
 (***********************************************************)
 (*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
@@ -526,3 +529,4 @@ DEFINE_PROGRAM
 (*                     END OF PROGRAM                      *)
 (*          DO NOT PUT ANY CODE BELOW THIS COMMENT         *)
 (***********************************************************)
+#end_if
