@@ -48,6 +48,9 @@
 ************************************************************)
 
 PROGRAM_NAME='amx-test-suite'
+
+#if_not_defined AMX_TEST_SUITE
+#define AMX_TEST_SUITE 1
 (***********************************************************)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
@@ -483,3 +486,4 @@ DEFINE_PROGRAM
 (*                     END OF PROGRAM                      *)
 (*          DO NOT PUT ANY CODE BELOW THIS COMMENT         *)
 (***********************************************************)
+#end_if
