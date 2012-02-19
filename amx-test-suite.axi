@@ -144,20 +144,11 @@ volatile integer testSuiteEventQueueReadPos;
 volatile integer testSuiteEventQueueWritePos;
 
 (***********************************************************)
-(*              LATCHING DEFINITIONS GO BELOW              *)
-(***********************************************************)
-DEFINE_LATCHING
-
-(***********************************************************)
-(*         MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW         *)
-(***********************************************************)
-DEFINE_MUTUALLY_EXCLUSIVE
-
-(***********************************************************)
 (*         SUBROUTINE/FUNCTION DEFINITIONS GO BELOW        *)
 (***********************************************************)
 (* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
+DEFINE_MUTUALLY_EXCLUSIVE
 
 /*
  *  Print a line to the NetLinx diagnostic window.
@@ -519,11 +510,6 @@ data_event[vdvTestSuiteListener]
 	testSuiteParseUserCommand(data.text);
     }
 }
-
-(***********************************************************)
-(*                 THE MAINLINE GOES BELOW                 *)
-(***********************************************************)
-DEFINE_PROGRAM
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)
