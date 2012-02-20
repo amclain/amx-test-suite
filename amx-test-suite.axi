@@ -118,6 +118,7 @@ DEFINE_TYPE
 // Used for testing events.
 struct testSuiteEvent
 {
+    char name[255];	// Assertion name.
     dev device;		// Device triggering the event.
     sinteger status;	// See test suite event status constants.
     integer type;	// See test suite event type constants.
@@ -276,39 +277,27 @@ define_function testSuiteStartTests()
  */
 define_function testSuiteEventTriggered(dev device, integer type, char level, char str[])
 {
-    integer occupiedCounter;	// Prevents while statement endless loop.
-    occupiedCounter = 1;
+    integer i;
+    i = 1;
     
     // Make sure event slot isn't occupied before writing.
-    while (testSuiteEventQueue[occupiedCounter].status != TEST_SUITE_ESTAT_VACANT)
+    while (testSuiteEventQueue[i].status != TEST_SUITE_ESTAT_VACANT)
     {
-	//testSuiteEventQueueWritePos++;
-	occupiedCounter++;
+	i++;
 	
 	// Break if buffer is full to prevent endless loop.
-	if (occupiedCounter > max_length_array(testSuiteEventQueue))
+	if (i > max_length_array(testSuiteEventQueue))
 	{
 	    testSuitePrint('--EVENT QUEUE OVERFLOW--');
 	    return;
 	}
     }
 
-    testSuiteEventQueue[occupiedCounter].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventQueue[occupiedCounter].type = type;
-    testSuiteEventQueue[occupiedCounter].device = device;
-    testSuiteEventQueue[occupiedCounter].str = str;
-    testSuiteEventQueue[occupiedCounter].level = level;
-    
-    /*
-    if (testSuiteEventQueueWritePos < max_length_array(testSuiteEventQueue))
-    {
-	testSuiteEventQueueWritePos++;
-    }
-    else
-    {
-	testSuiteEventQueueWritePos = 0;
-    }
-    */
+    testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventQueue[i].type = type;
+    testSuiteEventQueue[i].device = device;
+    testSuiteEventQueue[i].str = str;
+    testSuiteEventQueue[i].level = level;
 }
 
 /*
@@ -316,7 +305,33 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
  */
 define_function testSuiteProcessEventAssertions()
 {
+    integer i, j;
     
+    for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
+    {
+	// Check for pending assertions.
+	if (testSuiteEventAsserts[i].status == TEST_SUITE_ESTAT_PENDING)
+	{
+	    for (j = 1; j <= max_length_array(testSuiteEventQueue); j++)
+	    {
+		// Check for event match.
+		if (testSuiteEventAsserts[i].device == testSuiteEventQueue[j].device &&
+		    testSuiteEventAsserts[i].type == testSuiteEventQueue[j].type &&
+		    testSuiteEventAsserts[i].level == testSuiteEventQueue[j].level &&
+		    testSuiteEventAsserts[i].str == testSuiteEventQueue[j].str)
+		{
+		    testSuitePass(testSuiteEventAsserts[i].name);
+		    
+		    testSuiteEventAsserts[i].status = TEST_SUITE_ESTAT_ASSERTED;
+		    testSuiteEventQueue[j].status = TEST_SUITE_ESTAT_ASSERTED;
+		    
+		    break;
+		}
+	    }
+	}
+    }
+    
+    // TODO: Do garbage collection.
 }
 
 (***********************************************************)
@@ -539,62 +554,28 @@ define_function sinteger assertStringNotContains(char x[], char y[], char name[]
  */
 define_function assertEvent(dev device, integer type, char level, char str[], char name[])
 {
-    //local_var writePos;		// 
-    integer occupiedCounter;	// Prevents while statement endless loop.
-    
-    //if (writePos < 1) writePos = 1;
-    occupiedCounter = 1;
+    integer i;
+    i = 1;
     
     // Make sure event slot isn't occupied before writing.
-    while (testSuiteEventAsserts[occupiedCounter].status != TEST_SUITE_ESTAT_VACANT)
+    while (testSuiteEventAsserts[i].status != TEST_SUITE_ESTAT_VACANT)
     {
-	//writePos++;
-	occupiedCounter++;
+	i++;
 	
 	// Break if buffer is full to prevent endless loop.
-	if (occupiedCounter > max_length_array(testSuiteEventAsserts))
+	if (i > max_length_array(testSuiteEventAsserts))
 	{
 	    testSuitePrint('--ASSERT QUEUE OVERFLOW--');
 	    return;
 	}
     }
 
-    testSuiteEventAsserts[occupiedCounter].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventAsserts[occupiedCounter].type = type;
-    testSuiteEventAsserts[occupiedCounter].device = device;
-    testSuiteEventAsserts[occupiedCounter].str = str;
-    testSuiteEventAsserts[occupiedCounter].level = level;
-    
-    /*
-    if (writePos < max_length_array(testSuiteEventAsserts))
-    {
-	writePos++;
-    }
-    else
-    {
-	writePos = 1;
-    }
-    */
-
-    /*
-    integer i;
-    
-    for (i = 1; i <= max_length_array(testSuiteEventQueue); i++)
-    {
-	if (testSuiteEventQueue[i].status == TEST_SUITE_ESTAT_PENDING &&
-	    testSuiteEventQueue[i].device == device &&
-	    testSuiteEventQueue[i].type == type &&
-	    testSuiteEventQueue[i].level == level &&
-	    testSuiteEventQueue[i].str == str)
-	{
-	    testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_ASSERTED;
-	    
-	    return testSuitePass(name);
-	}
-    }
-    
-    return testSuiteFail(name);
-    */
+    testSuiteEventAsserts[i].name = name;
+    testSuiteEventAsserts[i].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventAsserts[i].type = type;
+    testSuiteEventAsserts[i].device = device;
+    testSuiteEventAsserts[i].str = str;
+    testSuiteEventAsserts[i].level = level;
 }
 
 (***********************************************************)
@@ -616,6 +597,10 @@ data_event[vdvTestSuiteListener]
 	testSuiteParseUserCommand(data.text);
     }
 }
+
+// TODO: Add timeline event listener for event expiration.
+//       Only increment the timer in the event.  Let the
+//       garbage collector expire the events.
 
 (***********************************************************)
 (*                 THE MAINLINE GOES BELOW                 *)
