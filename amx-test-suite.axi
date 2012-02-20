@@ -79,6 +79,9 @@ TEST_FAIL	= -1;
 TEST_SUITE_NULL	       = 0;
 TEST_SUITE_NULL_STRING = '';
 
+// Test Suite Timelines //
+TEST_SUITE_TIMELINE_TIMESTAMP = 1; // For timestamp (in ms).
+
 // Test Suite Running States //
 TEST_SUITE_IDLE	   = 0;
 TEST_SUITE_RUNNING = 1;
@@ -124,12 +127,17 @@ struct testSuiteEvent
     integer type;	// See test suite event type constants.
     char str[1024];	// Data: Used for strings.
     char level;		// Data: Used for levels.
+    long timestamp;	// Time the event was created.
+    long expiration;	// Timestamp value that the event expires on.
 }
 
 (***********************************************************)
 (*              VARIABLE DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_VARIABLE
+
+long testSuiteTimestamp = 0;		// Timestamp timer.
+long testSuiteTimestampResolution[] = {1};	// 1 ms resolution.
 
 slong testsPass;
 slong testsFail;
@@ -293,6 +301,7 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
 	}
     }
 
+    testSuiteEventQueue[i].timestamp = testSuiteTimestamp;
     testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
     testSuiteEventQueue[i].type = type;
     testSuiteEventQueue[i].device = device;
@@ -331,7 +340,22 @@ define_function testSuiteProcessEventAssertions()
 	}
     }
     
-    // TODO: Do garbage collection.
+    // Do garbage collection.
+    testSuiteGarbageCollectEventQueue(testSuiteEventAsserts);
+    testSuiteGarbageCollectEventQueue(testSuiteEventQueue);
+}
+
+/*
+ *  Performs garbage collection on the specified queue.
+ */
+define_function testSuiteGarbageCollectEventQueue(testSuiteEvent queue[])
+{
+    integer i;
+    
+    for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
+    {
+	// TODO:
+    }
 }
 
 (***********************************************************)
@@ -571,6 +595,7 @@ define_function assertEvent(dev device, integer type, char level, char str[], ch
     }
 
     testSuiteEventAsserts[i].name = name;
+    testSuiteEventAsserts[i].timestamp = testSuiteTimestamp;
     testSuiteEventAsserts[i].status = TEST_SUITE_ESTAT_PENDING;
     testSuiteEventAsserts[i].type = type;
     testSuiteEventAsserts[i].device = device;
@@ -585,6 +610,8 @@ DEFINE_START
 
 testSuiteResetCounters();
 
+timeline_create(TEST_SUITE_TIMELINE_TIMESTAMP, testSuiteTimestampResolution, 1, TIMELINE_RELATIVE, TIMELINE_REPEAT); // Setup the timestamp timer.
+
 (***********************************************************)
 (*                   THE EVENTS GO BELOW                   *)
 (***********************************************************)
@@ -598,9 +625,10 @@ data_event[vdvTestSuiteListener]
     }
 }
 
-// TODO: Add timeline event listener for event expiration.
-//       Only increment the timer in the event.  Let the
-//       garbage collector expire the events.
+timeline_event[TEST_SUITE_TIMELINE_TIMESTAMP]
+{
+    testSuiteTimestamp++;
+}
 
 (***********************************************************)
 (*                 THE MAINLINE GOES BELOW                 *)
