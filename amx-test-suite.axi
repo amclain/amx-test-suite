@@ -141,11 +141,6 @@ char testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;	// See test suite message
 volatile testSuiteEvent testSuiteEventAsserts[255];
 volatile testSuiteEvent testSuiteEventQueue[255];
 
-volatile integer testSuiteEventAssertReadPos = 1;
-volatile integer testSuiteEventAssertWritePos = 1;
-volatile integer testSuiteEventQueueReadPos = 1;
-volatile integer testSuiteEventQueueWritePos = 1;
-
 (***********************************************************)
 (*         SUBROUTINE/FUNCTION DEFINITIONS GO BELOW        *)
 (***********************************************************)
@@ -285,25 +280,26 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
     occupiedCounter = 1;
     
     // Make sure event slot isn't occupied before writing.
-    while (testSuiteEventQueue[testSuiteEventQueueWritePos].status != TEST_SUITE_ESTAT_VACANT)
+    while (testSuiteEventQueue[occupiedCounter].status != TEST_SUITE_ESTAT_VACANT)
     {
-	testSuiteEventQueueWritePos++;
+	//testSuiteEventQueueWritePos++;
 	occupiedCounter++;
 	
 	// Break if buffer is full to prevent endless loop.
-	if (occupiedCounter >= max_length_array(testSuiteEventQueue))
+	if (occupiedCounter > max_length_array(testSuiteEventQueue))
 	{
-	    testSuitePrint('--EVENT QUEUE OVERFLOW--.');
+	    testSuitePrint('--EVENT QUEUE OVERFLOW--');
 	    return;
 	}
     }
 
-    testSuiteEventQueue[testSuiteEventQueueWritePos].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventQueue[testSuiteEventQueueWritePos].type = type;
-    testSuiteEventQueue[testSuiteEventQueueWritePos].device = device;
-    testSuiteEventQueue[testSuiteEventQueueWritePos].str = str;
-    testSuiteEventQueue[testSuiteEventQueueWritePos].level = level;
+    testSuiteEventQueue[occupiedCounter].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventQueue[occupiedCounter].type = type;
+    testSuiteEventQueue[occupiedCounter].device = device;
+    testSuiteEventQueue[occupiedCounter].str = str;
+    testSuiteEventQueue[occupiedCounter].level = level;
     
+    /*
     if (testSuiteEventQueueWritePos < max_length_array(testSuiteEventQueue))
     {
 	testSuiteEventQueueWritePos++;
@@ -312,6 +308,15 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
     {
 	testSuiteEventQueueWritePos = 0;
     }
+    */
+}
+
+/*
+ *  Process any pending event assertions and garbage-collect the queues.
+ */
+define_function testSuiteProcessEventAssertions()
+{
+    
 }
 
 (***********************************************************)
@@ -530,10 +535,48 @@ define_function sinteger assertStringNotContains(char x[], char y[], char name[]
 }
 
 /*
- *  Passes if the event is triggered.
+ *  Adds an event to the assertion queue.
  */
-define_function sinteger assertEvent(dev device, integer type, char level, char str[], char name[])
+define_function assertEvent(dev device, integer type, char level, char str[], char name[])
 {
+    //local_var writePos;		// 
+    integer occupiedCounter;	// Prevents while statement endless loop.
+    
+    //if (writePos < 1) writePos = 1;
+    occupiedCounter = 1;
+    
+    // Make sure event slot isn't occupied before writing.
+    while (testSuiteEventAsserts[occupiedCounter].status != TEST_SUITE_ESTAT_VACANT)
+    {
+	//writePos++;
+	occupiedCounter++;
+	
+	// Break if buffer is full to prevent endless loop.
+	if (occupiedCounter > max_length_array(testSuiteEventAsserts))
+	{
+	    testSuitePrint('--ASSERT QUEUE OVERFLOW--');
+	    return;
+	}
+    }
+
+    testSuiteEventAsserts[occupiedCounter].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventAsserts[occupiedCounter].type = type;
+    testSuiteEventAsserts[occupiedCounter].device = device;
+    testSuiteEventAsserts[occupiedCounter].str = str;
+    testSuiteEventAsserts[occupiedCounter].level = level;
+    
+    /*
+    if (writePos < max_length_array(testSuiteEventAsserts))
+    {
+	writePos++;
+    }
+    else
+    {
+	writePos = 1;
+    }
+    */
+
+    /*
     integer i;
     
     for (i = 1; i <= max_length_array(testSuiteEventQueue); i++)
@@ -551,6 +594,7 @@ define_function sinteger assertEvent(dev device, integer type, char level, char 
     }
     
     return testSuiteFail(name);
+    */
 }
 
 (***********************************************************)
@@ -572,6 +616,13 @@ data_event[vdvTestSuiteListener]
 	testSuiteParseUserCommand(data.text);
     }
 }
+
+(***********************************************************)
+(*                 THE MAINLINE GOES BELOW                 *)
+(***********************************************************)
+DEFINE_PROGRAM
+
+testSuiteProcessEventAssertions();
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)
