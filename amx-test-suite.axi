@@ -532,21 +532,21 @@ define_function sinteger assertStringNotContains(char x[], char y[], char name[]
 /*
  *  Passes if the event is triggered.
  */
-define_function sinteger assertEvent(testSuiteEvent e, char name[])
+define_function sinteger assertEvent(dev device, integer type, char level, char str[], char name[])
 {
     integer i;
     
-    /*
     for (i = 1; i <= max_length_array(testSuiteEventQueue); i++)
     {
-	if (testSuiteEventQueue[i] == TEST_SUITE_ESTAT_PENDING &&
-	    testSuiteEventQueue[i].device == e.device)
+	if (testSuiteEventQueue[i].status == TEST_SUITE_ESTAT_PENDING &&
+	    testSuiteEventQueue[i].device == device &&
+	    testSuiteEventQueue[i].type == type &&
+	    testSuiteEventQueue[i].level == level &&
+	    testSuiteEventQueue[i].str == str)
 	{
-	    // TODO: Validate returned data.
 	    return testSuitePass(name);
 	}
     }
-    */
     
     return testSuiteFail(name);
 }
