@@ -76,6 +76,9 @@ DEFINE_CONSTANT
 TEST_PASS	=  0;
 TEST_FAIL	= -1;
 
+TEST_SUITE_NULL	       = 0;
+TEST_SUITE_NULL_STRING = '';
+
 // Test Suite Running States //
 TEST_SUITE_IDLE	   = 0;
 TEST_SUITE_RUNNING = 1;
@@ -130,18 +133,18 @@ DEFINE_VARIABLE
 slong testsPass;
 slong testsFail;
 
-char testSuiteRunning;		// See test suite runnning states.
-char testSuiteMessageMode;	// See test suite message modes.
+char testSuiteRunning = TEST_SUITE_RUNNING;		// See test suite runnning states.
+char testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;	// See test suite message modes.
 
 // These arrays take up a lot of memory (>500k).
 // Store them in RAM instead of non-volatile.
 volatile testSuiteEvent testSuiteEventAsserts[255];
 volatile testSuiteEvent testSuiteEventQueue[255];
 
-volatile integer testSuiteEventAssertReadPos;
-volatile integer testSuiteEventAssertWritePos;
-volatile integer testSuiteEventQueueReadPos;
-volatile integer testSuiteEventQueueWritePos;
+volatile integer testSuiteEventAssertReadPos = 1;
+volatile integer testSuiteEventAssertWritePos = 1;
+volatile integer testSuiteEventQueueReadPos = 1;
+volatile integer testSuiteEventQueueWritePos = 1;
 
 (***********************************************************)
 (*         SUBROUTINE/FUNCTION DEFINITIONS GO BELOW        *)
@@ -271,6 +274,44 @@ define_function testSuiteStartTests()
     testSuitePrint('Done.');
     
     testSuiteRunning = TEST_SUITE_IDLE; // Flag tests as completed.
+}
+
+/*
+ *  A device event was triggered.  Add the event to the queue.
+ */
+define_function testSuiteEventTriggered(dev device, integer type, char level, char str[])
+{
+    integer occupiedCounter;	// Prevents while statement endless loop.
+    occupiedCounter = 1;
+    
+    // Make sure event slot isn't occupied before writing.
+    while (testSuiteEventQueue[testSuiteEventQueueWritePos].status != TEST_SUITE_ESTAT_VACANT)
+    {
+	testSuiteEventQueueWritePos++;
+	occupiedCounter++;
+	
+	// Break if buffer is full to prevent endless loop.
+	if (occupiedCounter >= max_length_array(testSuiteEventQueue))
+	{
+	    testSuitePrint('--EVENT QUEUE OVERFLOW--.');
+	    return;
+	}
+    }
+
+    testSuiteEventQueue[testSuiteEventQueueWritePos].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventQueue[testSuiteEventQueueWritePos].type = type;
+    testSuiteEventQueue[testSuiteEventQueueWritePos].device = device;
+    testSuiteEventQueue[testSuiteEventQueueWritePos].str = str;
+    testSuiteEventQueue[testSuiteEventQueueWritePos].level = level;
+    
+    if (testSuiteEventQueueWritePos < max_length_array(testSuiteEventQueue))
+    {
+	testSuiteEventQueueWritePos++;
+    }
+    else
+    {
+	testSuiteEventQueueWritePos = 0;
+    }
 }
 
 (***********************************************************)
@@ -419,7 +460,7 @@ define_function sinteger assertLessEqual(slong x, slong y, char name[])
 /*
  *  Alias of assertStringEqual().
  */
-define_function sinteger assertString(char x[], char y[], name[])
+define_function sinteger assertString(char x[], char y[], char name[])
 {
     return assertStringEqual(x, y, name);
 }
@@ -428,7 +469,7 @@ define_function sinteger assertString(char x[], char y[], name[])
  *  Passes if string x[] is identical to string y[].
  *  x[] == y[]
  */
-define_function sinteger assertStringEqual(char x[], char y[], name[])
+define_function sinteger assertStringEqual(char x[], char y[], char name[])
 {
     if (compare_string(x, y) == 1)
     {
@@ -444,7 +485,7 @@ define_function sinteger assertStringEqual(char x[], char y[], name[])
  *  Passes if string x[] is not identical to string y[].
  *  x[] != y[]
  */
-define_function sinteger assertStringNotEqual(char x[], char y[], name[])
+define_function sinteger assertStringNotEqual(char x[], char y[], char name[])
 {
     if (compare_string(x, y) == 0)
     {
@@ -460,7 +501,7 @@ define_function sinteger assertStringNotEqual(char x[], char y[], name[])
  *  Passes if string x[] contains string y[].
  *  y[] is in x[]
  */
-define_function sinteger assertStringContains(char x[], char y[], name[])
+define_function sinteger assertStringContains(char x[], char y[], char name[])
 {
     if (find_string(x, y, 1) >= 1)
     {
@@ -476,7 +517,7 @@ define_function sinteger assertStringContains(char x[], char y[], name[])
  *  Passes if string x[] does not contain string y[].
  *  y[] not in x[]
  */
-define_function sinteger assertStringNotContains(char x[], char y[], name[])
+define_function sinteger assertStringNotContains(char x[], char y[], char name[])
 {
     if (find_string(x, y, 1) == 0)
     {
@@ -488,13 +529,32 @@ define_function sinteger assertStringNotContains(char x[], char y[], name[])
     }
 }
 
+/*
+ *  Passes if the event is triggered.
+ */
+define_function sinteger assertEvent(testSuiteEvent e, char name[])
+{
+    integer i;
+    
+    /*
+    for (i = 1; i <= max_length_array(testSuiteEventQueue); i++)
+    {
+	if (testSuiteEventQueue[i] == TEST_SUITE_ESTAT_PENDING &&
+	    testSuiteEventQueue[i].device == e.device)
+	{
+	    // TODO: Validate returned data.
+	    return testSuitePass(name);
+	}
+    }
+    */
+    
+    return testSuiteFail(name);
+}
+
 (***********************************************************)
 (*                 STARTUP CODE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_START
-
-testSuiteRunning = TEST_SUITE_IDLE;
-testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;
 
 testSuiteResetCounters();
 
