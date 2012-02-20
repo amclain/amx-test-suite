@@ -28,6 +28,13 @@ PROGRAM_NAME='test-suite-tests'
 #include 'amx-test-suite';
 
 (***********************************************************)
+(*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
+(***********************************************************)
+DEFINE_DEVICE
+
+vdvEventTester = 34000:1:0; // Virtual device for event asserts.
+
+(***********************************************************)
 (*                TEST DEFINITIONS GO BELOW                *)
 (***********************************************************)
 DEFINE_MUTUALLY_EXCLUSIVE
@@ -37,6 +44,7 @@ define_function testSuiteRun()
     testBooleanAsserts();
     testComparisonAsserts();
     testStringAsserts();
+    testEventAsserts();
 }
 
 define_function testBooleanAsserts()
@@ -110,6 +118,26 @@ define_function testStringAsserts()
     // String does not contain.
     assertStringNotContains('abc def', '123', 'Assert string not contains.');
     assertStringNotContains('abc def', 'def', 'Assert string not contains (FAIL).');
+}
+
+define_function testEventAsserts()
+{
+    // Data event: String.
+    send_string vdvEventTester, 'ABC123EVENT';
+    assertEvent(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, 'ABC123EVENT', 'Assert event.');
+}
+
+(***********************************************************)
+(*                   THE EVENTS GO BELOW                   *)
+(***********************************************************)
+DEFINE_EVENT
+
+DATA_EVENT[vdvEventTester]
+{
+    STRING:
+    {
+	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, data.text);
+    }
 }
 
 (***********************************************************)

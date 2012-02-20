@@ -544,6 +544,8 @@ define_function sinteger assertEvent(dev device, integer type, char level, char 
 	    testSuiteEventQueue[i].level == level &&
 	    testSuiteEventQueue[i].str == str)
 	{
+	    testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_ASSERTED;
+	    
 	    return testSuitePass(name);
 	}
     }
