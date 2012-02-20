@@ -79,6 +79,8 @@ TEST_FAIL	= -1;
 TEST_SUITE_NULL	       = 0;
 TEST_SUITE_NULL_STRING = '';
 
+TEST_SUITE_TIMEOUT_DEFAULT = 1000; // Event timeout in ms.
+
 // Test Suite Timelines //
 TEST_SUITE_TIMELINE_TIMESTAMP = 1; // For timestamp (in ms).
 
@@ -302,6 +304,7 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
     }
 
     testSuiteEventQueue[i].timestamp = testSuiteTimestamp;
+    testSuiteEventQueue[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
     testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
     testSuiteEventQueue[i].type = type;
     testSuiteEventQueue[i].device = device;
@@ -352,9 +355,43 @@ define_function testSuiteGarbageCollectEventQueue(testSuiteEvent queue[])
 {
     integer i;
     
-    for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
+    for (i = 1; i <= max_length_array(queue); i++)
     {
-	// TODO:
+	// Check for empty slot.
+	if (queue[i].status == TEST_SUITE_ESTAT_VACANT)
+	{
+	    continue; // Skip.
+	}
+	
+	// Check for expired event.
+	if (queue[i].expiration < testSuiteTimestamp)
+	{
+	    // Check if event was an assertion (name attached).
+	    if (length_string(queue[i].name) > 0)
+	    {
+		// Fail the assertion.
+		testSuiteFail(queue[i].name);
+	    }
+	    
+	    queue[i].status = TEST_SUITE_ESTAT_EXPIRED;
+	}
+	
+	// Check for pending slot.
+	if (queue[i].status == TEST_SUITE_ESTAT_PENDING)
+	{
+	    continue; // Skip.
+	}
+	
+	// Free the slot.
+	queue[i].device = 0;
+	queue[i].expiration = 0;
+	queue[i].level = 0;
+	queue[i].name = '';
+	queue[i].str = '';
+	queue[i].timestamp = 0;
+	queue[i].type = 0;
+	
+	queue[i].status = TEST_SUITE_ESTAT_VACANT;
     }
 }
 
@@ -594,8 +631,9 @@ define_function assertEvent(dev device, integer type, char level, char str[], ch
 	}
     }
 
-    testSuiteEventAsserts[i].name = name;
     testSuiteEventAsserts[i].timestamp = testSuiteTimestamp;
+    testSuiteEventAsserts[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
+    testSuiteEventAsserts[i].name = name;
     testSuiteEventAsserts[i].status = TEST_SUITE_ESTAT_PENDING;
     testSuiteEventAsserts[i].type = type;
     testSuiteEventAsserts[i].device = device;
