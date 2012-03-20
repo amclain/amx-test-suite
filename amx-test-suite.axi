@@ -67,6 +67,7 @@ DEFINE_DEVICE
 
 dvTestSuiteDebug	= 0:0:0;     // Console output.
 vdvTestSuiteListener	= 36000:1:0; // User command listener.
+vdvTestSuiteInternal	= 36001:1:0; // Internal trigger listener.
 
 (***********************************************************)
 (*              CONSTANT DEFINITIONS GO BELOW              *)
@@ -245,6 +246,33 @@ define_function testSuiteParseUserCommand(char str[])
 }
 
 /*
+ *  Parse internal triggers.
+ */
+define_function testSuiteParseInternalCommand(char str[])
+{
+    // User tests are finished, but there may be event assertions in the queue.
+    if (find_string(str, 'tests-complete', 1))
+    {
+	/*if (testSuiteAssertQueueIsEmpty() == false)
+	{
+	    // Put the completion event back in the AMX queue if the
+	    // assert queue is not empty.  This prevents the test suite
+	    // from finishing prematurely.
+	    
+	    send_string vdvTestSuiteInternal, 'tests-complete';
+	    return;
+	}*/
+	
+	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
+	testSuitePrint('Done.');
+	
+	testSuiteRunning = TEST_SUITE_IDLE;
+	
+	return;
+    }
+}
+
+/*
  *  Print the list of test suite commands.
  */
 define_function testSuitePrintCommands()
@@ -276,18 +304,10 @@ define_function testSuiteStartTests()
     
     testSuiteRun(); // Call the user-defined function to start tests.
     
-    // Wait until the event assertion queue is empty.
-    /*
-    while (testSuiteAssertQueueIsEmpty() == false)
-    {
-	wait 1;
-    }
-    */
-    
-    testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
-    testSuitePrint('Done.');
-    
-    testSuiteRunning = TEST_SUITE_IDLE; // Flag tests as completed.
+    // User tests have been run.  Throw a test completion event
+    // in the AMX queue so that all of the event assertions have
+    // time to finish.
+    send_string vdvTestSuiteInternal, 'tests-complete';
 }
 
 /*
@@ -327,7 +347,7 @@ define_function testSuiteProcessEventAssertions()
 {
     integer i, j;
     
-    //if (testSuiteRunning != TEST_SUITE_RUNNING) return;
+    if (testSuiteRunning != TEST_SUITE_RUNNING) return;
     
     for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
     {
@@ -689,6 +709,14 @@ data_event[vdvTestSuiteListener]
     string:
     {
 	testSuiteParseUserCommand(data.text);
+    }
+}
+
+data_event[vdvTestSuiteInternal]
+{
+    string:
+    {
+	testSuiteParseInternalCommand(data.text);
     }
 }
 

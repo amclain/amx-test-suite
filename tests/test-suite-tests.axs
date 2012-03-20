@@ -62,7 +62,7 @@ define_function testBooleanAsserts()
     // Assert false.
     assertFalse(false, 'Assert boolean false.');
     assertFalse(0, 'Assert integer 0.');
-    assertFalse(-1, 'Assert integer < 0');
+    assertFalse(-1, 'Assert integer < 0.');
     assertFalse(1, 'Assert False = 1 (FAIL).');
 }
 
