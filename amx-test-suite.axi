@@ -144,7 +144,7 @@ long testSuiteTimestampResolution[] = {1};	// 1 ms resolution.
 slong testsPass;
 slong testsFail;
 
-char testSuiteRunning = TEST_SUITE_RUNNING;		// See test suite runnning states.
+char testSuiteRunning = TEST_SUITE_IDLE;		// See test suite runnning states.
 char testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;	// See test suite message modes.
 
 // These arrays take up a lot of memory (>500k).
