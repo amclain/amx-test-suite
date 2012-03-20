@@ -253,15 +253,17 @@ define_function testSuiteParseInternalCommand(char str[])
     // User tests are finished, but there may be event assertions in the queue.
     if (find_string(str, 'tests-complete', 1))
     {
-	/*if (testSuiteAssertQueueIsEmpty() == false)
+	if (testSuiteAssertQueueIsEmpty() == false)
 	{
 	    // Put the completion event back in the AMX queue if the
 	    // assert queue is not empty.  This prevents the test suite
 	    // from finishing prematurely.
 	    
+	    wait 1;
+	    testSuiteProcessEventAssertions();
 	    send_string vdvTestSuiteInternal, 'tests-complete';
 	    return;
-	}*/
+	}
 	
 	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
 	testSuitePrint('Done.');
@@ -723,7 +725,6 @@ data_event[vdvTestSuiteInternal]
 timeline_event[TEST_SUITE_TIMELINE_TIMESTAMP]
 {
     testSuiteTimestamp++;
-    testSuiteProcessEventAssertions();
 }
 
 (***********************************************************)
