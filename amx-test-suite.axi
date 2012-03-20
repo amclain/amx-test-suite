@@ -276,6 +276,14 @@ define_function testSuiteStartTests()
     
     testSuiteRun(); // Call the user-defined function to start tests.
     
+    // Wait until the event assertion queue is empty.
+    /*
+    while (testSuiteAssertQueueIsEmpty() == false)
+    {
+	wait 1;
+    }
+    */
+    
     testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
     testSuitePrint('Done.');
     
@@ -318,6 +326,8 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
 define_function testSuiteProcessEventAssertions()
 {
     integer i, j;
+    
+    //if (testSuiteRunning != TEST_SUITE_RUNNING) return;
     
     for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
     {
@@ -393,6 +403,25 @@ define_function testSuiteGarbageCollectEventQueue(testSuiteEvent queue[])
 	
 	queue[i].status = TEST_SUITE_ESTAT_VACANT;
     }
+}
+
+/*
+ *  Check if the assertion queue is empty.
+ *  Returns boolean: true if empty.
+ */
+define_function sinteger testSuiteAssertQueueIsEmpty()
+{
+    integer i;
+    
+    for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
+    {
+	if (testSuiteEventAsserts[i].status != TEST_SUITE_ESTAT_VACANT)
+	{
+	    return false; // Queue is not empty.
+	}
+    }
+    
+    return true; // Queue is empty.
 }
 
 (***********************************************************)
