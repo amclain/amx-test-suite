@@ -666,14 +666,8 @@ data_event[vdvTestSuiteListener]
 timeline_event[TEST_SUITE_TIMELINE_TIMESTAMP]
 {
     testSuiteTimestamp++;
+    testSuiteProcessEventAssertions();
 }
-
-(***********************************************************)
-(*                 THE MAINLINE GOES BELOW                 *)
-(***********************************************************)
-DEFINE_PROGRAM
-
-testSuiteProcessEventAssertions();
 
 (***********************************************************)
 (*                     END OF PROGRAM                      *)

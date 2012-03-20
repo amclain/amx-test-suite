@@ -125,6 +125,14 @@ define_function testEventAsserts()
     // Data event: String.
     send_string vdvEventTester, 'ABC123EVENT';
     assertEvent(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, 'ABC123EVENT', 'Assert event.');
+    
+    // Data event: String, FAIL.
+    // Incorrect data returned.
+    send_string vdvEventTester, 'ABC123EVENT';
+    assertEvent(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, '456', 'Assert event (FAIL).');
+    
+    // Data event: String, FAIL.
+    // Event never triggered (don't handle event).
 }
 
 (***********************************************************)
