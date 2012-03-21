@@ -94,7 +94,8 @@ TEST_SUITE_MESSAGE_NORMAL  = 0; // Only print failed tests.
 TEST_SUITE_MESSAGE_VERBOSE = 1; // Print all tests.
 
 // Test Suite Event Types //
-TEST_SUITE_EVENT_NULL		= 0
+TEST_SUITE_EVENT_NULL		= 0;
+    // Data Events
 TEST_SUITE_EVENT_COMMAND	= 1;
 TEST_SUITE_EVENT_STRING		= 2;
 TEST_SUITE_EVENT_ONLINE		= 3;
@@ -102,11 +103,14 @@ TEST_SUITE_EVENT_OFFLINE	= 4;
 TEST_SUITE_EVENT_ONERROR	= 5;
 TEST_SUITE_EVENT_STANDBY	= 6;
 TEST_SUITE_EVENT_AWAKE		= 7;
+    // Button Events
 TEST_SUITE_EVENT_PUSH		= 8;
 TEST_SUITE_EVENT_RELEASE	= 9;
 TEST_SUITE_EVENT_HOLD		= 10;
+    // Channel Events
 TEST_SUITE_EVENT_ON		= 11;
 TEST_SUITE_EVENT_OFF		= 12;
+    // Level Events
 TEST_SUITE_EVENT_LEVEL		= 13;
 
 // Test Suite Event Status //
@@ -663,8 +667,10 @@ define_function sinteger assertStringNotContains(char x[], char y[], char name[]
 
 /*
  *  Adds an event to the assertion queue.
+ *  This is a generic function.  It is recommended to use one of the more
+ *  specific event assertions.
  */
-define_function assertEvent(dev device, integer type, char level, char str[], char name[])
+define_function assertEventGeneric(dev device, integer type, char level, char str[], char name[])
 {
     integer i;
     i = 1;
@@ -690,6 +696,125 @@ define_function assertEvent(dev device, integer type, char level, char str[], ch
     testSuiteEventAsserts[i].device = device;
     testSuiteEventAsserts[i].str = str;
     testSuiteEventAsserts[i].level = level;
+}
+
+/*
+ *  Alias of assertEventString().
+ */
+define_function assertEvent(dev device, char str[], char name[]) {
+    assertEventString(device, str, name);
+}
+
+/*
+ *  Assert a data event.
+ */
+define_function assertEventData(dev device, integer type, char str[], char name[])
+{
+    assertEventGeneric(device, type, TEST_SUITE_NULL, str, name);
+}
+
+/*
+ *  Assert a command data event.
+ */
+define_function assertEventCommand(dev device, char str[], char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_COMMAND, TEST_SUITE_NULL, str, name);
+}
+
+/*
+ *  Assert a string data event.
+ */
+define_function assertEventString(dev device, char str[], char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, str, name);
+}
+
+/*
+ *  Assert an online data event.
+ */
+define_function assertEventOnline(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_ONLINE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert an offline data event.
+ */
+define_function assertEventOffline(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_OFFLINE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert an on-error data event.
+ */
+define_function assertEventOnError(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_ONERROR, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a standby data event.
+ */
+define_function assertEventStandby(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_STANDBY, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert an awake data event.
+ */
+define_function assertEventAwake(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_AWAKE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a button push event.
+ */
+define_function assertEventPush(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_PUSH, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a button release event.
+ */
+define_function assertEventRelease(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_RELEASE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a button hold event.
+ */
+define_function assertEventHold(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_HOLD, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a channel on event.
+ */
+define_function assertEventOn(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_ON, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a channel off event.
+ */
+define_function assertEventOff(dev device, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_OFF, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+}
+
+/*
+ *  Assert a level event.
+ */
+define_function assertEventLevel(dev device, char level, char name[])
+{
+    assertEventGeneric(device, TEST_SUITE_EVENT_ONLINE, level, TEST_SUITE_NULL_STRING, name);
 }
 
 (***********************************************************)
