@@ -126,6 +126,38 @@ define_function testEventAsserts()
     send_string vdvEventTester, 'ABC123EVENT';
     assertEvent(vdvEventTester, 'ABC123EVENT', 'Assert string event.');
     
+    // Command event.
+    send_command vdvEventTester, 'ABC123COMMAND';
+    assertEventCommand(vdvEventTester, 'ABC123COMMAND', 'Assert command event.');
+    
+    // Online data event.
+    
+    // Offline data event.
+    
+    // On-error data event.
+    
+    // Standby data event.
+    
+    // Awake data event.
+    
+    // Button push event.
+    
+    // Button release event.
+    
+    // Button hold event.
+    
+    // Channel on event.
+    on[vdvEventTester, 1];
+    assertEventOn(vdvEventTester, 'Assert channel on event.');
+    
+    // Channel off event.
+    off[vdvEventTester, 1];
+    assertEventOff(vdvEventTester, 'Assert channel off event.');
+    
+    // Level event.
+    send_level vdvEventTester, 1, 127;
+    assertEventLevel(vdvEventTester, 127, 'Assert level event.');
+    
     // String event returns incorrect data.
     send_string vdvEventTester, 'ABC456EVENT';
     assertEvent(vdvEventTester, '456', 'Assert event string invalid data (FAIL).');
@@ -145,6 +177,29 @@ DATA_EVENT[vdvEventTester]
     {
 	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, data.text);
     }
+    
+    COMMAND:
+    {
+	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_COMMAND, TEST_SUITE_NULL, data.text);
+    }
+}
+
+CHANNEL_EVENT[vdvEventTester, 1]
+{
+    ON:
+    {
+	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_ON, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING);
+    }
+    
+    OFF:
+    {
+	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_OFF, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING);
+    }
+}
+
+LEVEL_EVENT[vdvEventTester, 1]
+{
+    testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_LEVEL, level.value, TEST_SUITE_NULL_STRING);
 }
 
 (***********************************************************)
