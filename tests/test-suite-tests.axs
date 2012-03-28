@@ -148,15 +148,15 @@ define_function testEventAsserts()
     
     // Channel on event.
     on[vdvEventTester, 1];
-    assertEventOn(vdvEventTester, 'Assert channel on event.');
+    assertEventOn(vdvEventTester, 1, 'Assert channel on event.');
     
     // Channel off event.
     off[vdvEventTester, 1];
-    assertEventOff(vdvEventTester, 'Assert channel off event.');
+    assertEventOff(vdvEventTester, 1, 'Assert channel off event.');
     
     // Level event.
     send_level vdvEventTester, 1, 127;
-    assertEventLevel(vdvEventTester, 127, 'Assert level event.');
+    assertEventLevel(vdvEventTester, 1, 127, 'Assert level event.');
     
     // String event returns incorrect data.
     send_string vdvEventTester, 'ABC456EVENT';
@@ -175,12 +175,24 @@ DATA_EVENT[vdvEventTester]
 {
     STRING:
     {
-	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, data.text);
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.type = TEST_SUITE_EVENT_STRING;
+	e.str = data.text;
+	
+	testSuiteEventTriggered(e);
     }
     
     COMMAND:
     {
-	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_COMMAND, TEST_SUITE_NULL, data.text);
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.type = TEST_SUITE_EVENT_COMMAND;
+	e.str = data.text;
+	
+	testSuiteEventTriggered(e);
     }
 }
 
@@ -188,18 +200,37 @@ CHANNEL_EVENT[vdvEventTester, 1]
 {
     ON:
     {
-	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_ON, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING);
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.channel = channel.channel;
+	e.type = TEST_SUITE_EVENT_ON;
+	
+	testSuiteEventTriggered(e);
     }
     
     OFF:
     {
-	testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_OFF, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING);
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.channel = channel.channel;
+	e.type = TEST_SUITE_EVENT_OFF;
+	
+	testSuiteEventTriggered(e);
     }
 }
 
 LEVEL_EVENT[vdvEventTester, 1]
 {
-    testSuiteEventTriggered(vdvEventTester, TEST_SUITE_EVENT_LEVEL, level.value, TEST_SUITE_NULL_STRING);
+    testSuiteEvent e;
+    
+    e.device = vdvEventTester;
+    e.channel = level.input.level;
+    e.value = level.value;
+    e.type = TEST_SUITE_EVENT_LEVEL;
+    
+    testSuiteEventTriggered(e);
 }
 
 (***********************************************************)

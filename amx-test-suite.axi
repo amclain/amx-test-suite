@@ -130,10 +130,11 @@ struct testSuiteEvent
 {
     char name[255];	// Assertion name.
     dev device;		// Device triggering the event.
+    integer channel;	// Device channel or level number, if applicable.
     sinteger status;	// See test suite event status constants.
     integer type;	// See test suite event type constants.
+    char value;		// Data: Used for level value.
     char str[1024];	// Data: Used for strings.
-    char level;		// Data: Used for levels.
     long timestamp;	// Time the event was created.
     long expiration;	// Timestamp value that the event expires on.
 }
@@ -143,7 +144,7 @@ struct testSuiteEvent
 (***********************************************************)
 DEFINE_VARIABLE
 
-long testSuiteTimestamp = 0;		// Timestamp timer.
+long testSuiteTimestamp = 0;		// Timestamp timer used for events.
 long testSuiteTimestampResolution[] = {1};	// 1 ms resolution.
 
 slong testsPass;
@@ -319,7 +320,7 @@ define_function testSuiteStartTests()
 /*
  *  A device event was triggered.  Add the event to the queue.
  */
-define_function testSuiteEventTriggered(dev device, integer type, char level, char str[])
+define_function testSuiteEventTriggered(testSuiteEvent e)
 {
     integer i;
     i = 1;
@@ -340,10 +341,11 @@ define_function testSuiteEventTriggered(dev device, integer type, char level, ch
     testSuiteEventQueue[i].timestamp = testSuiteTimestamp;
     testSuiteEventQueue[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
     testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventQueue[i].type = type;
-    testSuiteEventQueue[i].device = device;
-    testSuiteEventQueue[i].str = str;
-    testSuiteEventQueue[i].level = level;
+    testSuiteEventQueue[i].type = e.type;
+    testSuiteEventQueue[i].device = e.device;
+    testSuiteEventQueue[i].channel = e.channel;
+    testSuiteEventQueue[i].str = e.str;
+    testSuiteEventQueue[i].value = e.value;
 }
 
 /*
@@ -364,8 +366,9 @@ define_function testSuiteProcessEventAssertions()
 	    {
 		// Check for event match.
 		if (testSuiteEventAsserts[i].device == testSuiteEventQueue[j].device &&
+		    testSuiteEventAsserts[i].channel == testSuiteEventQueue[j].channel &&
 		    testSuiteEventAsserts[i].type == testSuiteEventQueue[j].type &&
-		    testSuiteEventAsserts[i].level == testSuiteEventQueue[j].level &&
+		    testSuiteEventAsserts[i].value == testSuiteEventQueue[j].value &&
 		    testSuiteEventAsserts[i].str == testSuiteEventQueue[j].str)
 		{
 		    testSuitePass(testSuiteEventAsserts[i].name);
@@ -420,8 +423,9 @@ define_function testSuiteGarbageCollectEventQueue(testSuiteEvent queue[])
 	
 	// Free the slot.
 	queue[i].device = 0;
+	queue[i].channel = 0;
 	queue[i].expiration = 0;
-	queue[i].level = 0;
+	queue[i].value = 0;
 	queue[i].name = '';
 	queue[i].str = '';
 	queue[i].timestamp = 0;
@@ -670,7 +674,7 @@ define_function sinteger assertStringNotContains(char x[], char y[], char name[]
  *  This is a generic function.  It is recommended to use one of the more
  *  specific event assertions.
  */
-define_function assertEventGeneric(dev device, integer type, char level, char str[], char name[])
+define_function assertEventGeneric(testSuiteEvent e)
 {
     integer i;
     i = 1;
@@ -690,12 +694,13 @@ define_function assertEventGeneric(dev device, integer type, char level, char st
 
     testSuiteEventAsserts[i].timestamp = testSuiteTimestamp;
     testSuiteEventAsserts[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
-    testSuiteEventAsserts[i].name = name;
+    testSuiteEventAsserts[i].name = e.name;
     testSuiteEventAsserts[i].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventAsserts[i].type = type;
-    testSuiteEventAsserts[i].device = device;
-    testSuiteEventAsserts[i].str = str;
-    testSuiteEventAsserts[i].level = level;
+    testSuiteEventAsserts[i].type = e.type;
+    testSuiteEventAsserts[i].device = e.device;
+    testSuiteEventAsserts[i].channel = e.channel;
+    testSuiteEventAsserts[i].str = e.str;
+    testSuiteEventAsserts[i].value = e.value;
 }
 
 /*
@@ -710,7 +715,14 @@ define_function assertEvent(dev device, char str[], char name[]) {
  */
 define_function assertEventData(dev device, integer type, char str[], char name[])
 {
-    assertEventGeneric(device, type, TEST_SUITE_NULL, str, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.type = type;
+    e.str = str;
+    e.name = name;
+    
+    assertEventGeneric(e);
 }
 
 /*
@@ -718,7 +730,7 @@ define_function assertEventData(dev device, integer type, char str[], char name[
  */
 define_function assertEventCommand(dev device, char str[], char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_COMMAND, TEST_SUITE_NULL, str, name);
+    assertEventData(device, TEST_SUITE_EVENT_COMMAND, str, name);
 }
 
 /*
@@ -726,7 +738,7 @@ define_function assertEventCommand(dev device, char str[], char name[])
  */
 define_function assertEventString(dev device, char str[], char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_STRING, TEST_SUITE_NULL, str, name);
+    assertEventData(device, TEST_SUITE_EVENT_STRING, str, name);
 }
 
 /*
@@ -734,7 +746,7 @@ define_function assertEventString(dev device, char str[], char name[])
  */
 define_function assertEventOnline(dev device, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_ONLINE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    assertEventData(device, TEST_SUITE_EVENT_ONLINE, TEST_SUITE_NULL_STRING, name);
 }
 
 /*
@@ -742,7 +754,7 @@ define_function assertEventOnline(dev device, char name[])
  */
 define_function assertEventOffline(dev device, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_OFFLINE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    assertEventData(device, TEST_SUITE_EVENT_OFFLINE, TEST_SUITE_NULL_STRING, name);
 }
 
 /*
@@ -750,7 +762,7 @@ define_function assertEventOffline(dev device, char name[])
  */
 define_function assertEventOnError(dev device, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_ONERROR, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    assertEventData(device, TEST_SUITE_EVENT_ONERROR, TEST_SUITE_NULL_STRING, name);
 }
 
 /*
@@ -758,7 +770,7 @@ define_function assertEventOnError(dev device, char name[])
  */
 define_function assertEventStandby(dev device, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_STANDBY, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    assertEventData(device, TEST_SUITE_EVENT_STANDBY, TEST_SUITE_NULL_STRING, name);
 }
 
 /*
@@ -766,55 +778,98 @@ define_function assertEventStandby(dev device, char name[])
  */
 define_function assertEventAwake(dev device, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_AWAKE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    assertEventData(device, TEST_SUITE_EVENT_AWAKE, TEST_SUITE_NULL_STRING, name);
 }
 
 /*
  *  Assert a button push event.
  */
-define_function assertEventPush(dev device, char name[])
+define_function assertEventPush(dev device, integer chan, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_PUSH, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = chan
+    e.type = TEST_SUITE_EVENT_PUSH;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 /*
  *  Assert a button release event.
  */
-define_function assertEventRelease(dev device, char name[])
+define_function assertEventRelease(dev device, integer chan, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_RELEASE, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = chan
+    e.type = TEST_SUITE_EVENT_RELEASE;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 /*
  *  Assert a button hold event.
  */
-define_function assertEventHold(dev device, char name[])
+define_function assertEventHold(dev device, integer chan, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_HOLD, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = chan
+    e.type = TEST_SUITE_EVENT_HOLD;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 /*
  *  Assert a channel on event.
  */
-define_function assertEventOn(dev device, char name[])
+define_function assertEventOn(dev device, integer chan, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_ON, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = chan
+    e.type = TEST_SUITE_EVENT_ON;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 /*
  *  Assert a channel off event.
  */
-define_function assertEventOff(dev device, char name[])
+define_function assertEventOff(dev device, integer chan, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_OFF, TEST_SUITE_NULL, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = chan
+    e.type = TEST_SUITE_EVENT_OFF;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 /*
  *  Assert a level event.
  */
-define_function assertEventLevel(dev device, char level, char name[])
+define_function assertEventLevel(dev device, integer level, char value, char name[])
 {
-    assertEventGeneric(device, TEST_SUITE_EVENT_ONLINE, level, TEST_SUITE_NULL_STRING, name);
+    testSuiteEvent e;
+    
+    e.device = device;
+    e.channel = level
+    e.value = value;
+    e.type = TEST_SUITE_EVENT_LEVEL;
+    e.name = name;
+
+    assertEventGeneric(e);
 }
 
 (***********************************************************)
