@@ -224,12 +224,22 @@ define_function testSuiteExpectFail()
 }
 
 /*
- *  Reset the test counters.
+ *  Reset the test suite.
  */
-define_function testSuiteResetCounters()
+define_function testSuiteReset()
 {
+    testSuiteEvent e;
+    integer i;
+    
     testsFail = 0;
     testsPass = 0;
+    testsExpectedFail = 0;
+    
+    for (i = 1; i <= max_length_array(testSuiteEventAsserts); i++)
+    {
+	testSuiteEventAsserts[i] = e;
+	testSuiteEventQueue[i] = e;
+    }
 }
 
 /*
@@ -325,7 +335,7 @@ define_function testSuiteStartTests()
     
     testSuiteRunning = TEST_SUITE_RUNNING; // Flag tests as running.
     
-    testSuiteResetCounters();
+    testSuiteReset();
     
     testSuitePrint('Running tests...');
     
@@ -897,7 +907,7 @@ define_function assertEventLevel(dev device, integer level, char value, char nam
 (***********************************************************)
 DEFINE_START
 
-testSuiteResetCounters();
+testSuiteReset();
 
 timeline_create(TEST_SUITE_TIMELINE_TIMESTAMP, testSuiteTimestampResolution, 1, TIMELINE_RELATIVE, TIMELINE_REPEAT); // Setup the timestamp timer.
 

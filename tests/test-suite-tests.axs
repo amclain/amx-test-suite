@@ -171,8 +171,13 @@ define_function testEventAsserts()
     assertEventOff(vdvEventTester, 1, 'Assert channel off event.');
     
     // Level event.
+    // Have to set this off of the existing value or the test will fail
+    // if the tests are run a second time.
+    send_level vdvEventTester, 1, 2;
+    assertEventLevel(vdvEventTester, 1, 2, 'Assert level event.');
+    
     send_level vdvEventTester, 1, 127;
-    assertEventLevel(vdvEventTester, 1, 127, 'Assert level event.');
+    assertEventLevel(vdvEventTester, 1, 127, 'Assert level event 2.');
     
     // String event returns incorrect data.
     send_string vdvEventTester, 'ABC456EVENT';
