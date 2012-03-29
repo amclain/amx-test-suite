@@ -147,8 +147,10 @@ DEFINE_VARIABLE
 long testSuiteTimestamp = 0;		// Timestamp timer used for events.
 long testSuiteTimestampResolution[] = {1};	// 1 ms resolution.
 
+// Test statistic counters.
 slong testsPass;
 slong testsFail;
+slong testsExpectedFail; // Tests that are expected or designed to fail.
 
 char testSuiteRunning = TEST_SUITE_IDLE;		// See test suite runnning states.
 char testSuiteMessageMode = TEST_SUITE_MESSAGE_NORMAL;	// See test suite message modes.
@@ -207,6 +209,18 @@ define_function sinteger testSuiteFail(char name[])
     testSuitePrintName(name);
     send_string dvTestSuiteDebug, "'--FAILED--'";
     return TEST_FAIL;
+}
+
+/*
+ *  Increment the expected test failure counter.
+ *  
+ *  This is designed for rare situations when a test is expected or supposed
+ *  to fail.  An example is designing tests that check a test suite's
+ *  functionality.
+ */
+define_function testSuiteExpectFail()
+{
+    testsExpectedFail++;
 }
 
 /*
@@ -271,6 +285,12 @@ define_function testSuiteParseInternalCommand(char str[])
 	}
 	
 	testSuitePrint("'Total Tests: ', itoa(testsPass + testsFail), '   Tests Passed: ', itoa(testsPass), '   Tests Failed: ', itoa(testsFail)");
+	
+	if (testsExpectedFail > 0)
+	{
+	    testSuitePrint("'Expected Failures: ', itoa(testsExpectedFail)");
+	}
+	
 	testSuitePrint('Done.');
 	
 	testSuiteRunning = TEST_SUITE_IDLE;
