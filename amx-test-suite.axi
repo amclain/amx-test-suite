@@ -359,37 +359,6 @@ define_function testSuiteStartTests()
 }
 
 /*
- *  A device event was triggered.  Add the event to the queue.
- */
-define_function testSuiteEventTriggered(testSuiteEvent e)
-{
-    integer i;
-    i = 1;
-    
-    // Make sure event slot isn't occupied before writing.
-    while (testSuiteEventQueue[i].status != TEST_SUITE_ESTAT_VACANT)
-    {
-	i++;
-	
-	// Break if buffer is full to prevent endless loop.
-	if (i > max_length_array(testSuiteEventQueue))
-	{
-	    testSuitePrint('--EVENT QUEUE OVERFLOW--');
-	    return;
-	}
-    }
-
-    testSuiteEventQueue[i].timestamp = testSuiteTimestamp;
-    testSuiteEventQueue[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
-    testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
-    testSuiteEventQueue[i].type = e.type;
-    testSuiteEventQueue[i].device = e.device;
-    testSuiteEventQueue[i].channel = e.channel;
-    testSuiteEventQueue[i].str = e.str;
-    testSuiteEventQueue[i].value = e.value;
-}
-
-/*
  *  Process any pending event assertions and garbage-collect the queues.
  */
 define_function testSuiteProcessEventAssertions()
@@ -493,6 +462,37 @@ define_function sinteger testSuiteAssertQueueIsEmpty()
     }
     
     return true; // Queue is empty.
+}
+
+/*
+ *  A device event was triggered.  Add the event to the queue.
+ */
+define_function testSuiteEventTriggered(testSuiteEvent e)
+{
+    integer i;
+    i = 1;
+    
+    // Make sure event slot isn't occupied before writing.
+    while (testSuiteEventQueue[i].status != TEST_SUITE_ESTAT_VACANT)
+    {
+	i++;
+	
+	// Break if buffer is full to prevent endless loop.
+	if (i > max_length_array(testSuiteEventQueue))
+	{
+	    testSuitePrint('--EVENT QUEUE OVERFLOW--');
+	    return;
+	}
+    }
+
+    testSuiteEventQueue[i].timestamp = testSuiteTimestamp;
+    testSuiteEventQueue[i].expiration = testSuiteTimestamp + TEST_SUITE_TIMEOUT_DEFAULT;
+    testSuiteEventQueue[i].status = TEST_SUITE_ESTAT_PENDING;
+    testSuiteEventQueue[i].type = e.type;
+    testSuiteEventQueue[i].device = e.device;
+    testSuiteEventQueue[i].channel = e.channel;
+    testSuiteEventQueue[i].str = e.str;
+    testSuiteEventQueue[i].value = e.value;
 }
 
 (***********************************************************)
