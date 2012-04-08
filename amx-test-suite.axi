@@ -16,6 +16,17 @@
     function testSuiteRun().  Use the assert functions below
     to verify your code's behavior.
     
+    NOTE:
+    It is recommended NOT to test any files that contain code in the
+    mainline due to the nature of when the mainline is run.  One way
+    around this, which also makes for portable code, is to have the
+    mainline call functions that are defined in include files and run tests
+    on those include files.  See the following AMX tech note for more info:
+    
+    "When does DEFINE_PROGRAM run (or, why loops in mainline are bad)"
+    http://www.amx.com/techsupport/techNote.asp?id=993
+    
+    
     TO START THE TESTS:
     Compile your test project and load it on a master device.
     Launch the NetLinx Diagnostics Program provided by AMX and
