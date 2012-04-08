@@ -5,11 +5,11 @@
     Website: https://sourceforge.net/projects/amx-test-suite/
     
     
-    The "my-project" workspace contains production code that
+    The "production" system contains production code that
     would be loaded onto a master when the system is
     commissioned.
     
-    See the "my-project-tests" workspace for an example of
+    See the "testing" system for an example of
     how automated tests are run on this project's functions.
 ************************************************************)
 

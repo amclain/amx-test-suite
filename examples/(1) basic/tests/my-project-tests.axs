@@ -5,12 +5,12 @@
     Website: https://sourceforge.net/projects/amx-test-suite/
     
     
-    The "my-project-tests" workspace contains testing code
+    The "testing" system contains testing code
     that would be loaded onto a master to verify that
     functions in the production code return the correct
     values.
     
-    See the "my-project" workspace for an example of the
+    See the "production" system for an example of the
     production setup.
     
     See the "amx-test-suite" include file and/or website

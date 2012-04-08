@@ -139,7 +139,7 @@
 <Comments></Comments>
 </File>
 </System>
-<System IsActive="true" Platform="Netlinx" Transport="Serial"><Identifier>tests</Identifier>
+<System IsActive="true" Platform="Netlinx" Transport="Serial"><Identifier>testing</Identifier>
 <SysID>0</SysID>
 <TransSerial>COM1,38400,8,None,1,None</TransSerial>
 <TransModem>COM1,38400,8,None,1,None</TransModem>
@@ -154,7 +154,7 @@
 <Password></Password>
 <Comments></Comments>
 <File CompileType="None" Type="Include"><Identifier>amx-test-suite</Identifier>
-<FilePathName>..\amx-test-suite.axi</FilePathName>
+<FilePathName>..\..\amx-test-suite.axi</FilePathName>
 <Comments></Comments>
 </File>
 <File CompileType="None" Type="Include"><Identifier>my-project-functions</Identifier>
