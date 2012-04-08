@@ -3,6 +3,8 @@ Release 2.0.0
 * Added the ability to assert events:
     String, command, channel on, channel off, button push, button release, level.
 
+* Added event testing example project.
+
 * Added #if_not_defined to prevent compiler errors due to multiple includes of
   the test suite.
 
