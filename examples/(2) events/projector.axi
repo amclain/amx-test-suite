@@ -1,42 +1,44 @@
 (***********************************************************
-    AMX NETLINX TEST SUITE
-    EXAMPLE
-
-    Website: https://sourceforge.net/projects/amx-test-suite/
+    PROJECTOR INTERFACE
     
-    
-    The "my-project" workspace contains production code that
-    would be loaded onto a master when the system is
-    commissioned.
-    
-    See the "my-project-tests" workspace for an example of
-    how automated tests are run on this project's functions.
+    This file contains the code to interface with a fictitious
+    projector controlled via RS232.  The projector needs to
+    receive 'PON' and 'POFF' strings to turn its power on
+    and off.
 ************************************************************)
 
-PROGRAM_NAME='my-project'
+PROGRAM_NAME='projector'
 (***********************************************************)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
 (***********************************************************)
+(* REV HISTORY:                                            *)
+(***********************************************************)
+(*
+    History:
+*)
+(***********************************************************)
 (*                    INCLUDES GO BELOW                    *)
 (***********************************************************)
-
-#include 'my-project-functions'
 
 (***********************************************************)
 (*           DEVICE NUMBER DEFINITIONS GO BELOW            *)
 (***********************************************************)
 DEFINE_DEVICE
 
-dvTP = 10001:1:0; // Touch panel.
+/*
+ *  The projector is mapped to a virtual device to keep its
+ *  code portable and testable.  The virtual device allows the
+ *  events to be captured and asserted in the test environment.
+ *  It can be device-combined to the physical projector's port
+ *  in the production system.
+ */
+vdvProjector = 33000:1:0;
 
 (***********************************************************)
 (*              CONSTANT DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_CONSTANT
-
-BTN_VOL_UP = 1;   // Touch panel volume up button.
-BTN_VOL_DN = 2;   // Touch panel volume down button.
 
 (***********************************************************)
 (*              DATA TYPE DEFINITIONS GO BELOW             *)
@@ -47,9 +49,6 @@ DEFINE_TYPE
 (*              VARIABLE DEFINITIONS GO BELOW              *)
 (***********************************************************)
 DEFINE_VARIABLE
-
-sinteger volumeLevelMic1;
-sinteger volumeLevelMic2;
 
 (***********************************************************)
 (*              LATCHING DEFINITIONS GO BELOW              *)
@@ -67,36 +66,25 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
 (* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
 
+define_function projectorOn()
+{
+    send_string vdvProjector, "'PON'";
+}
+
+define_function projectorOff()
+{
+    send_string vdvProjector, "'POFF'";
+}
+
 (***********************************************************)
 (*                 STARTUP CODE GOES BELOW                 *)
 (***********************************************************)
 DEFINE_START
 
-volumeLevelMic1 = 0;
-volumeLevelMic2 = 0;
-
 (***********************************************************)
 (*                   THE EVENTS GO BELOW                   *)
 (***********************************************************)
 DEFINE_EVENT
-
-button_event[dvTP, BTN_VOL_UP]
-button_event[dvTP, BTN_VOL_DN]
-{
-    push:
-    {
-	switch (button.input.channel)
-	{
-	    // Volume up button pressed.  Increase level.
-	    case BTN_VOL_UP: add(volumeLevelMic1, 200);
-	    
-	    // Volume down button pressed.  Decrease level.
-	    case BTN_VOL_DN: subtract(volumeLevelMic2, 200);
-	    
-	    default: {}
-	}
-    }
-}
 
 (***********************************************************)
 (*                 THE MAINLINE GOES BELOW                 *)

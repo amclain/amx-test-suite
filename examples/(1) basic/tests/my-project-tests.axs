@@ -5,12 +5,12 @@
     Website: https://sourceforge.net/projects/amx-test-suite/
     
     
-    The "my-project-tests" workspace contains testing code
+    The "testing" system contains testing code
     that would be loaded onto a master to verify that
     functions in the production code return the correct
     values.
     
-    See the "my-project" workspace for an example of the
+    See the "production" system for an example of the
     production setup.
     
     See the "amx-test-suite" include file and/or website
@@ -18,7 +18,9 @@
     example test on a master.
     
     From the NetLinx Diagnostics Program, send the string
-    "run -v" (no quotes) to watch all tests.
+    "run -v" (no quotes) to watch all tests.  See the
+    amx-test-suite include file or the website for more
+    documentation.
 ************************************************************)
 
 PROGRAM_NAME='my-project-tests'

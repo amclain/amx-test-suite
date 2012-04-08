@@ -6,16 +6,11 @@
 
 ------------------------------------------------------
 
-my-project.apw
+(1) basic
 
-	The "my-project" workspace contains production code that
-	would be loaded onto a master when the system is
-	commissioned.
+    A basic workspace showing how to segregate production and
+    test code and run a few tests.
 
+(2) events
 
-tests/my-project-tests.apw
-
-	The "my-project-tests" workspace contains testing code
-	that would be loaded onto a master to verify that
-	functions in the production code return the correct
-	values.
+    A workspace showing how to test events.

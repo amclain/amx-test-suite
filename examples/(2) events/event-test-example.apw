@@ -104,23 +104,46 @@
        <!ELEMENT Notes (#PCDATA)>
 ]>
 
-<Workspace CurrentVersion="3.3"><Identifier>my-project-tests</Identifier>
+<Workspace CurrentVersion="3.3"><Identifier>event-test-example</Identifier>
 <CreateVersion>3.3</CreateVersion>
 <PJS_File></PJS_File>
 <PJS_ConvertDate></PJS_ConvertDate>
 <PJS_CreateDate></PJS_CreateDate>
 <Comments></Comments>
-<Project><Identifier>my-project-tests</Identifier>
+<Project><Identifier>event-test-example</Identifier>
 <Designer></Designer>
 <DealerID></DealerID>
 <SalesOrder></SalesOrder>
 <PurchaseOrder></PurchaseOrder>
 <Comments></Comments>
-<System IsActive="true" Platform="Netlinx" Transport="TCPIP"><Identifier>my-project-tests</Identifier>
+<System IsActive="false" Platform="Netlinx" Transport="Serial"><Identifier>production</Identifier>
 <SysID>0</SysID>
 <TransSerial>COM1,38400,8,None,1,None</TransSerial>
 <TransModem>COM1,38400,8,None,1,None</TransModem>
-<TransTCPIP>192.168.0.29:1319:1:Dev::</TransTCPIP>
+<TransTCPIP>10.0.20.65:1319:1:AMX::</TransTCPIP>
+<VirtualNetLinxMasterFlag>0</VirtualNetLinxMasterFlag>
+<VNMRestoreIPSettings>0.0.0.0:1319:1</VNMRestoreIPSettings>
+<VNMSystemID>1</VNMSystemID>
+<VNMIPAddress>10.0.0.1</VNMIPAddress>
+<VNMMaskAddress>255.255.255.0</VNMMaskAddress>
+<IsAuthenticationEnabled>0</IsAuthenticationEnabled>
+<UserName></UserName>
+<Password></Password>
+<Comments></Comments>
+<File CompileType="Netlinx" Type="MasterSrc"><Identifier>event-test-example</Identifier>
+<FilePathName>event-test-example.axs</FilePathName>
+<Comments></Comments>
+</File>
+<File CompileType="None" Type="Include"><Identifier>projector</Identifier>
+<FilePathName>projector.axi</FilePathName>
+<Comments></Comments>
+</File>
+</System>
+<System IsActive="true" Platform="Netlinx" Transport="Serial"><Identifier>testing</Identifier>
+<SysID>0</SysID>
+<TransSerial>COM1,38400,8,None,1,None</TransSerial>
+<TransModem>COM1,38400,8,None,1,None</TransModem>
+<TransTCPIP>10.0.20.65:1319:1:AMX::</TransTCPIP>
 <VirtualNetLinxMasterFlag>0</VirtualNetLinxMasterFlag>
 <VNMRestoreIPSettings>0.0.0.0:1319:1</VNMRestoreIPSettings>
 <VNMSystemID>1</VNMSystemID>
@@ -134,12 +157,12 @@
 <FilePathName>..\..\amx-test-suite.axi</FilePathName>
 <Comments></Comments>
 </File>
-<File CompileType="None" Type="Include"><Identifier>my-project-functions</Identifier>
-<FilePathName>..\my-project-functions.axi</FilePathName>
+<File CompileType="None" Type="Include"><Identifier>projector</Identifier>
+<FilePathName>projector.axi</FilePathName>
 <Comments></Comments>
 </File>
-<File CompileType="Netlinx" Type="MasterSrc"><Identifier>my-project-tests</Identifier>
-<FilePathName>my-project-tests.axs</FilePathName>
+<File CompileType="Netlinx" Type="MasterSrc"><Identifier>event-test-example-tests</Identifier>
+<FilePathName>tests\event-test-example-tests.axs</FilePathName>
 <Comments></Comments>
 </File>
 </System>
