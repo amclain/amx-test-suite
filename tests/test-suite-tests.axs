@@ -157,8 +157,12 @@ define_function testEventAsserts()
     // Awake data event.
     
     // Button push event.
+    do_push(vdvEventTester, 1);
+    assertEventPush(vdvEventTester, 1, 'Button push event.');
     
     // Button release event.
+    do_release(vdvEventTester, 1);
+    assertEventRelease(vdvEventTester, 1, 'Button release event.');
     
     // Button hold event.
     
@@ -239,6 +243,31 @@ CHANNEL_EVENT[vdvEventTester, 1]
 	e.device = vdvEventTester;
 	e.channel = channel.channel;
 	e.type = TEST_SUITE_EVENT_OFF;
+	
+	testSuiteEventTriggered(e);
+    }
+}
+
+BUTTON_EVENT[vdvEventTester, 1]
+{
+    PUSH:
+    {
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.channel = button.input.channel;
+	e.type = TEST_SUITE_EVENT_PUSH;
+	
+	testSuiteEventTriggered(e);
+    }
+    
+    RELEASE:
+    {
+	testSuiteEvent e;
+	
+	e.device = vdvEventTester;
+	e.channel = button.input.channel;
+	e.type = TEST_SUITE_EVENT_RELEASE;
 	
 	testSuiteEventTriggered(e);
     }
