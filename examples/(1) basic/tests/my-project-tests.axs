@@ -18,7 +18,9 @@
     example test on a master.
     
     From the NetLinx Diagnostics Program, send the string
-    "run -v" (no quotes) to watch all tests.
+    "run -v" (no quotes) to watch all tests.  See the
+    amx-test-suite include file or the website for more
+    documentation.
 ************************************************************)
 
 PROGRAM_NAME='my-project-tests'
