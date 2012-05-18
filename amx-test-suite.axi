@@ -472,6 +472,8 @@ define_function testSuiteEventTriggered(testSuiteEvent e)
     integer i;
     i = 1;
     
+    if (testSuiteRunning == TEST_SUITE_IDLE) return;
+    
     // Make sure event slot isn't occupied before writing.
     while (testSuiteEventQueue[i].status != TEST_SUITE_ESTAT_VACANT)
     {
